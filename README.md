@@ -1,3 +1,22 @@
+# Hayato's new 2024 Portfolio
+
+- After many years of having a disappointing, quickly-made portfolio, I have decided to create a proper one which I will be proud of.
+- While the portfolio should technically be just HTML/CSS, I am also using this as an opportunity to improve the relevant skills for my job. That's why my tech stack is really overkill for such a small project.
+
+### Stack:
+
+- Vite
+- Styled Components
+- Zod
+- React Hook Form
+- Typescript
+- Redux Toolkit
+- Axios
+- Vitest
+- Dayjs
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -17,12 +36,12 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
