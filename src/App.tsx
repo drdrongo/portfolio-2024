@@ -1,15 +1,19 @@
-import { ThemeProvider, keyframes } from "styled-components";
+import {
+  ThemeProvider,
+  // keyframes
+} from "styled-components";
 import { styled } from "styled-components";
 import "./App.css";
 import hayato from "./assets/hayato-shaped.png";
 import blob from "./assets/blob.svg";
-import swoosh from "./assets/swoosh.svg";
-import satellite from "./assets/satellite.png";
-import airplane from "./assets/airplane.png";
+// import swoosh from "./assets/swoosh.svg";
+// import satellite from "./assets/satellite.png";
+// import airplane from "./assets/airplane.png";
 
 import { COLORS } from "./constants/theme";
-import { gradient2 } from "./constants/gradients";
-import { useRef } from "react";
+// import { gradient2 } from "./constants/gradients";
+import { useEffect, useRef, useState } from "react";
+import { HourlyColors, useColorTransition } from "./utils/color-transition";
 
 const theme = {
   colors: COLORS,
@@ -78,11 +82,11 @@ const HeaderText = styled.h1`
   font-family: "poppins";
 `;
 
-const SwooshImage = styled.img`
-  position: absolute;
-  bottom: 0;
-  z-index: 11;
-`;
+// const SwooshImage = styled.img`
+//   position: absolute;
+//   bottom: 0;
+//   z-index: 11;
+// `;
 
 const AbsoluteContainer = styled.div`
   position: absolute;
@@ -102,53 +106,90 @@ const SwooshContainer = styled.div`
   overflow: hidden;
 `;
 
-const slowRotationAnimation = keyframes`
- from {
-    -ms-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -ms-transform: rotate(360deg);
-    -moz-transform: rotate(360deg);
-    -webkit-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
+// const slowRotationAnimation = keyframes`
+//  from {
+//     -ms-transform: rotate(0deg);
+//     -moz-transform: rotate(0deg);
+//     -webkit-transform: rotate(0deg);
+//     -o-transform: rotate(0deg);
+//     transform: rotate(0deg);
+//   }
+//   to {
+//     -ms-transform: rotate(360deg);
+//     -moz-transform: rotate(360deg);
+//     -webkit-transform: rotate(360deg);
+//     -o-transform: rotate(360deg);
+//     transform: rotate(360deg);
+//   }
+// `;
+
+// const skyWheelSize = 40000;
+// const skyWheelOffset = -skyWheelSize / 6;
+
+// const SkyWheel = styled(gradient2)`
+//   height: ${skyWheelSize}px;
+//   width: ${skyWheelSize}px;
+//   border-radius: 50%;
+//   position: absolute;
+//   top: ${skyWheelOffset}px;
+//   left: ${skyWheelOffset}px;
+//   animation-name: ${slowRotationAnimation};
+//   animation-duration: 60s;
+//   animation-iteration-count: infinite;
+//   animation-timing-function: linear;
+// `;
+
+// const Satellite = styled.img`
+//   height: 15px;
+//   width: 15px;
+//   position: absolute;
+//   z-index: 10;
+//   top: 0;
+//   left: 0;
+//   background-size: contain;
+// `;
+// const Airplane = styled(Satellite)`
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+// `;
+
+const MyColor = styled.div.attrs((props) => ({
+  style: {
+    background: props.color,
+  },
+}))`
+  width: 300px;
+  height: 300px;
+  transition: background 0.1s;
 `;
 
-const skyWheelSize = 40000;
-const skyWheelOffset = -skyWheelSize / 6;
-
-const SkyWheel = styled(gradient2)`
-  height: ${skyWheelSize}px;
-  width: ${skyWheelSize}px;
-  border-radius: 50%;
-  position: absolute;
-  top: ${skyWheelOffset}px;
-  left: ${skyWheelOffset}px;
-  animation-name: ${slowRotationAnimation};
-  animation-duration: 60s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-`;
-
-const Satellite = styled.img`
-  height: 15px;
-  width: 15px;
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  left: 0;
-  background-size: contain;
-`;
-const Airplane = styled(Satellite)`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
+const colorsHigh: HourlyColors = [
+  [8, 2, 77],
+  [24, 5, 56],
+  [31, 31, 60],
+  [32, 32, 60],
+  [33, 33, 60],
+  [65, 66, 97],
+  [140, 119, 168],
+  [149, 174, 211],
+  [152, 205, 250],
+  [170, 229, 254],
+  [138, 221, 253],
+  [138, 225, 253],
+  [179, 233, 255],
+  [179, 235, 255],
+  [138, 219, 251],
+  [150, 225, 254],
+  [92, 187, 227],
+  [64, 156, 205],
+  [38, 113, 168],
+  [164, 64, 13],
+  [25, 17, 15],
+  [55, 39, 29],
+  [14, 13, 51],
+  [13, 4, 66],
+];
 
 function App() {
   const skyWheelRef = useRef<HTMLDivElement | null>(null);
@@ -162,17 +203,33 @@ function App() {
     // It might be easier to control all the animations in javascript instead.
   };
 
+  const currentHex1 = useColorTransition(colorsHigh);
+  // const currentHex2 = useColorTransition(colorsHigh);
+  // const currentHex3 = useColorTransition(colorsHigh);
+
+  const [myColor, setMyColor] = useState<string>();
+
+  useEffect(() => {
+    setInterval(() => {
+      const newColor = `linear-gradient(${currentHex1.current}, ${currentHex1.current}, ${currentHex1.current})`;
+      setMyColor(newColor);
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
         <SectionContainer>
           <SwooshContainer>
-            <Satellite src={satellite} alt="satellite" />
+            {/* <Satellite src={satellite} alt="satellite" /> */}
 
-            <Airplane src={airplane} alt="airplane" />
+            {/* <Airplane src={airplane} alt="airplane" /> */}
             {/* Now you need to add the rest of the background in here, right? */}
-            <SwooshImage src={swoosh} alt="" />
-            <SkyWheel ref={skyWheelRef} />
+            {/* <SwooshImage src={swoosh} alt="" /> */}
+            {/* <SkyWheel ref={skyWheelRef} /> */}
+
+            <MyColor color={myColor} />
           </SwooshContainer>
 
           <AbsoluteContainer>
