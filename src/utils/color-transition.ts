@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type RGB = [number, number, number];
 
@@ -36,21 +36,15 @@ export type HourlyColors = [
 export const useColorTransition = (hourlyColors: HourlyColors) => {
   const fps = 30;
   const duration = 3;
+
   const isCompletedRef = useRef(false);
   const currentHourRef = useRef(0);
-
-  const increment = useRef([0, 0, 0]);
+  const increment = useRef<RGB>([0, 0, 0]);
   const transHandler = useRef<number>();
-
-  const currentColor = useRef(hourlyColors[currentHourRef.current]); // TODO: Should be current element's BG color.
+  const currentColor = useRef(hourlyColors[currentHourRef.current]);
   const targetColor = useRef<RGB>(hourlyColors[currentHourRef.current + 1]);
-
   const currentHex = useRef<string>(rgb2hex(currentColor.current));
-
-  useEffect(() => {
-    startTransition();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const timerRef = useRef<number>();
 
   // Calculates the distance between the RGB values.
   // We need to know the distance between two colors
@@ -69,14 +63,14 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     distanceArray: number[],
     fps = 30,
     duration = 1
-  ): number[] {
-    const tempIncrement = [];
+  ): RGB {
+    const tempIncrement: RGB = [0, 0, 0];
     for (let i = 0; i < distanceArray.length; i++) {
       let incr = Math.abs(Math.floor(distanceArray[i] / (fps * duration)));
       if (incr === 0) {
         incr = 1;
       }
-      tempIncrement.push(incr);
+      tempIncrement[i] = incr;
     }
     return tempIncrement;
   }
@@ -95,51 +89,49 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     return "#" + color.join("");
   }
 
+  /*
+  Important notes:
+  It seems like this isn't working so well having the seconds incrementation combined. I need to be able to have them decoupled.
+  */
+
   /* ==================== Transition Initiator ==================== */
   const startTransition = () => {
-    console.log("inside startTransition!!!");
-    // clearInterval(transHandler.current);
+    clearInterval(transHandler.current);
 
-    // targetColor.current = generateRGB();
     targetColor.current = hourlyColors[currentHourRef.current];
-    console.log("targetColor.current", targetColor.current);
+
     const distance = calculateDistance(
       currentColor.current,
       targetColor.current
     );
-    increment.current = calculateIncrement(distance, fps, duration);
 
-    // transHandler.current = setInterval(transition, 1000 / fps);
-    transHandler.current = setInterval(transition, 500);
+    increment.current = calculateIncrement(distance, fps, duration);
+    transHandler.current = setInterval(transition, 1000 / fps);
   };
 
-  const timerRef = useRef<number>();
-
   useEffect(() => {
-    // Increment the number every second.
-    // The transition function will only continue into the next iteration once the number is incremented.
-    // The number will also only transition if the color transition is completed.
-
-    const doTimeoutStuff = () => {
-      console.log("inside doTimeoutStuff");
+    const continueTransitionAfterCheck = () => {
       if (isCompletedRef.current) {
-        console.log("inside doTimeoutStuff - isCompleted");
-
         isCompletedRef.current = false;
 
         currentHourRef.current =
-          currentHourRef.current >= hourlyColors.length
+          currentHourRef.current >= hourlyColors.length - 1
             ? 0
             : currentHourRef.current + 1;
 
         startTransition();
       }
-      clearTimeout(timerRef.current); // Is this necessary?
-      timerRef.current = setTimeout(doTimeoutStuff, 1000);
+      timerRef.current = setTimeout(continueTransitionAfterCheck, 500);
     };
 
-    doTimeoutStuff();
-    return clearTimeout(timerRef.current);
+    startTransition();
+    continueTransitionAfterCheck();
+
+    return () => {
+      clearTimeout(timerRef.current);
+      clearInterval(transHandler.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkColor = (i: number) => {
@@ -158,7 +150,6 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
 
   /* ==================== Transition Calculator ==================== */
   const transition = () => {
-    console.log("currentColor.current", currentColor.current);
     // checking R
     checkColor(0);
 
@@ -171,19 +162,13 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     // applying the new modified color
     currentHex.current = rgb2hex(currentColor.current);
 
-    // transition ended. start a new one
+    // transition ended. Determine if next one can be started
     if (
       increment.current[0] === 0 &&
       increment.current[1] === 0 &&
       increment.current[2] === 0
     ) {
       isCompletedRef.current = true;
-
-      console.log("is Completed");
-      // Iterates or resets to 0 when reaching end
-      console.log("currentHour", currentHourRef.current);
-      // startTransition();
-      // Here, we should pass in the next color that we wanna use.
     }
   };
 
