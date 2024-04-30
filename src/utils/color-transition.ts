@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 type RGB = [number, number, number];
 
@@ -35,16 +35,14 @@ export type HourlyColors = [
 
 export const useColorTransition = (hourlyColors: HourlyColors) => {
   const fps = 30;
-  const duration = 3;
+  const duration = 4;
 
   const isCompletedRef = useRef(false);
-  const currentHourRef = useRef(0);
   const increment = useRef<RGB>([0, 0, 0]);
   const transHandler = useRef<number>();
-  const currentColor = useRef(hourlyColors[currentHourRef.current]);
-  const targetColor = useRef<RGB>(hourlyColors[currentHourRef.current + 1]);
+  const currentColor = useRef(hourlyColors[0]);
+  const targetColor = useRef<RGB>(hourlyColors[1]);
   const currentHex = useRef<string>(rgb2hex(currentColor.current));
-  const timerRef = useRef<number>();
 
   // Calculates the distance between the RGB values.
   // We need to know the distance between two colors
@@ -65,6 +63,7 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     duration = 1
   ): RGB {
     const tempIncrement: RGB = [0, 0, 0];
+    // TODO: Can I change it to calculate based on the distance maybe? So that it always takes one second?
     for (let i = 0; i < distanceArray.length; i++) {
       let incr = Math.abs(Math.floor(distanceArray[i] / (fps * duration)));
       if (incr === 0) {
@@ -95,10 +94,14 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
   */
 
   /* ==================== Transition Initiator ==================== */
-  const startTransition = () => {
+  const startTransition = (currentHour: number) => {
+    if (isCompletedRef.current) {
+      isCompletedRef.current = false;
+    }
+
     clearInterval(transHandler.current);
 
-    targetColor.current = hourlyColors[currentHourRef.current];
+    targetColor.current = hourlyColors[currentHour];
 
     const distance = calculateDistance(
       currentColor.current,
@@ -108,31 +111,6 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     increment.current = calculateIncrement(distance, fps, duration);
     transHandler.current = setInterval(transition, 1000 / fps);
   };
-
-  useEffect(() => {
-    const continueTransitionAfterCheck = () => {
-      if (isCompletedRef.current) {
-        isCompletedRef.current = false;
-
-        currentHourRef.current =
-          currentHourRef.current >= hourlyColors.length - 1
-            ? 0
-            : currentHourRef.current + 1;
-
-        startTransition();
-      }
-      timerRef.current = setTimeout(continueTransitionAfterCheck, 500);
-    };
-
-    startTransition();
-    continueTransitionAfterCheck();
-
-    return () => {
-      clearTimeout(timerRef.current);
-      clearInterval(transHandler.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const checkColor = (i: number) => {
     if (currentColor.current[i] > targetColor.current[i]) {
@@ -172,5 +150,5 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     }
   };
 
-  return currentHex;
+  return { hex: currentHex, isReady: isCompletedRef.current, startTransition };
 };

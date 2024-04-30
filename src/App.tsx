@@ -1,4 +1,5 @@
 import {
+  ExecutionContext,
   ThemeProvider,
   // keyframes
 } from "styled-components";
@@ -7,13 +8,15 @@ import "./App.css";
 import hayato from "./assets/hayato-shaped.png";
 import blob from "./assets/blob.svg";
 import swoosh from "./assets/swoosh.svg";
-// import satellite from "./assets/satellite.png";
-// import airplane from "./assets/airplane.png";
+import satellite from "./assets/satellite.png";
+import airplane from "./assets/airplane.png";
 
 import { COLORS } from "./constants/theme";
 // import { gradient2 } from "./constants/gradients";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
+import { FastOmit } from "styled-components/dist/types";
+import { motion } from "framer-motion";
 
 const theme = {
   colors: COLORS,
@@ -106,62 +109,52 @@ const SwooshContainer = styled.div`
   overflow: hidden;
 `;
 
-// const slowRotationAnimation = keyframes`
-//  from {
-//     -ms-transform: rotate(0deg);
-//     -moz-transform: rotate(0deg);
-//     -webkit-transform: rotate(0deg);
-//     -o-transform: rotate(0deg);
-//     transform: rotate(0deg);
-//   }
-//   to {
-//     -ms-transform: rotate(360deg);
-//     -moz-transform: rotate(360deg);
-//     -webkit-transform: rotate(360deg);
-//     -o-transform: rotate(360deg);
-//     transform: rotate(360deg);
-//   }
-// `;
+const Satellite = styled.img`
+  height: 15px;
+  width: 15px;
+  position: absolute;
+  z-index: 10;
+  /* top: 0;
+  left: 0; */
+  background-size: contain;
+`;
+const Airplane = styled(Satellite)``;
 
-// const skyWheelSize = 40000;
-// const skyWheelOffset = -skyWheelSize / 6;
-
-// const SkyWheel = styled(gradient2)`
-//   height: ${skyWheelSize}px;
-//   width: ${skyWheelSize}px;
-//   border-radius: 50%;
-//   position: absolute;
-//   top: ${skyWheelOffset}px;
-//   left: ${skyWheelOffset}px;
-//   animation-name: ${slowRotationAnimation};
-//   animation-duration: 60s;
-//   animation-iteration-count: infinite;
-//   animation-timing-function: linear;
-// `;
-
-// const Satellite = styled.img`
-//   height: 15px;
-//   width: 15px;
-//   position: absolute;
-//   z-index: 10;
-//   top: 0;
-//   left: 0;
-//   background-size: contain;
-// `;
-// const Airplane = styled(Satellite)`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-// `;
-
-const MyColor = styled.div.attrs((props) => ({
+const MyColorBackgroundAttribute = (
+  props: ExecutionContext &
+    FastOmit<
+      React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLDivElement>,
+        HTMLDivElement
+      >,
+      never
+    >
+) => ({
   style: {
     background: props.color,
   },
-}))`
+});
+
+const MyColor = styled.div.attrs(MyColorBackgroundAttribute)`
   width: 100%;
   height: 100%;
-  transition: background 0.1s;
+`;
+
+const Star = styled.div<{
+  top: number;
+  left: number;
+  big: boolean;
+  opacity: 1 | 0;
+}>`
+  position: absolute;
+  top: ${(props) => props.top}px;
+  left: ${(props) => props.left}px;
+  width: ${(props) => (props.big ? 2 : 1)}px;
+  height: ${(props) => (props.big ? 2 : 1)}px;
+  background-color: #fff;
+  box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.5);
+  opacity: ${(props) => props.opacity};
+  transition: opacity 1.5s;
 `;
 
 const colorsHigh: HourlyColors = [
@@ -246,44 +239,133 @@ const colorsLow: HourlyColors = [
 ];
 
 function App() {
-  const skyWheelRef = useRef<HTMLDivElement | null>(null);
+  const [gradientColors, setGradientColors] = useState<string>();
 
-  const getSkyWheelStyles = () => {
-    if (!skyWheelRef.current) return;
+  const {
+    hex: currentHex1,
+    isReady: isReady1,
+    startTransition: startTransition1,
+  } = useColorTransition(colorsLow);
+  const {
+    hex: currentHex2,
+    isReady: isReady2,
+    startTransition: startTransition2,
+  } = useColorTransition(colorsMid);
+  const {
+    hex: currentHex3,
+    isReady: isReady3,
+    startTransition: startTransition3,
+  } = useColorTransition(colorsHigh);
 
-    const computedStyle = window.getComputedStyle(skyWheelRef.current);
-    console.log(computedStyle);
+  const [myTimer, setMyTimer] = useState<number>(0);
 
-    // It might be easier to control all the animations in javascript instead.
+  const startTransitions = () => {
+    startTransition1(myTimer);
+    startTransition2(myTimer);
+    startTransition3(myTimer);
   };
 
-  const currentHex1 = useColorTransition(colorsLow);
-  const currentHex2 = useColorTransition(colorsMid);
-  const currentHex3 = useColorTransition(colorsHigh);
+  useEffect(() => {
+    // save intervalId to clear the interval when the
+    // component re-renders
+    const intervalId = setInterval(() => {
+      setMyTimer((prev) => (prev >= 23 ? 0 : prev + 1));
+    }, 1000);
 
-  const [myColor, setMyColor] = useState<string>();
+    // clear interval on re-render to avoid memory leaks
+    return () => clearInterval(intervalId);
+  }, [myTimer, setMyTimer]);
 
   useEffect(() => {
-    setInterval(() => {
-      const newColor = `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`;
-      setMyColor(newColor);
-    }, 100);
+    const colorChangeIntv = setInterval(() => {
+      setGradientColors(
+        `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
+      );
+    }, 20);
+
+    startTransitions();
+
+    const timeChangeIntv = setInterval(() => {
+      if (isReady1 && isReady2 && isReady3) {
+        startTransitions();
+      }
+    }, 200);
+
+    return () => {
+      clearInterval(colorChangeIntv);
+      clearInterval(timeChangeIntv);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [myTimer]);
 
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
         <SectionContainer>
           <SwooshContainer>
-            {/* <Satellite src={satellite} alt="satellite" /> */}
+            {(myTimer > 20 || myTimer <= 6) && (
+              <>
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={true}
+                  top={200}
+                  left={300}
+                />
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={false}
+                  top={184}
+                  left={200}
+                />
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={true}
+                  top={10}
+                  left={184}
+                />
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={false}
+                  top={300}
+                  left={122}
+                />
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={false}
+                  top={260}
+                  left={40}
+                />
+                <Star
+                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                  big={false}
+                  top={109}
+                  left={66}
+                />
+              </>
+            )}
 
-            {/* <Airplane src={airplane} alt="airplane" /> */}
-            {/* Now you need to add the rest of the background in here, right? */}
-            {<SwooshImage src={swoosh} alt="" />}
-            {/* <SkyWheel ref={skyWheelRef} /> */}
+            {/* How do I get these to fly across the screen? */}
+            <Satellite
+              as={motion.img}
+              src={satellite}
+              alt="satellite"
+              initial={{ top: 400, left: "0%" }}
+              animate={{ top: 160, left: "100%" }}
+              transition={{ duration: 10, ease: "linear" }}
+            />
 
-            <MyColor color={myColor} />
+            {/* // TODO: Is there a classier way to do this? It doesnt look good. */}
+            <Airplane
+              src={airplane}
+              alt="airplane"
+              as={motion.img}
+              initial={{ top: 600, right: "0%", transform: "scaleX(-1)" }}
+              animate={{ top: 40, right: "100%", transform: "scaleX(-1)" }}
+              transition={{ duration: 10, ease: "linear" }}
+            />
+            <SwooshImage src={swoosh} alt="" />
+
+            <MyColor color={gradientColors} />
           </SwooshContainer>
 
           <AbsoluteContainer>
@@ -297,7 +379,7 @@ function App() {
                   <br />
                   He will make you a really great-looking website.
                 </p>
-                <CtaButton onClick={getSkyWheelStyles}>Get In Touch</CtaButton>
+                <CtaButton onClick={() => {}}>Get In Touch</CtaButton>
               </TextContent>
 
               <BlobContainer>
