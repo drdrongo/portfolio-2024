@@ -88,11 +88,6 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     return "#" + color.join("");
   }
 
-  /*
-  Important notes:
-  It seems like this isn't working so well having the seconds incrementation combined. I need to be able to have them decoupled.
-  */
-
   /* ==================== Transition Initiator ==================== */
   const startTransition = (currentHour: number) => {
     if (isCompletedRef.current) {

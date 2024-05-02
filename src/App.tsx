@@ -1,9 +1,4 @@
-import {
-  ExecutionContext,
-  ThemeProvider,
-  keyframes,
-  // keyframes
-} from "styled-components";
+import { ExecutionContext, ThemeProvider } from "styled-components";
 import { styled } from "styled-components";
 import "./App.css";
 import hayato from "./assets/hayato-shaped.png";
@@ -12,10 +7,13 @@ import swoosh from "./assets/swoosh.svg";
 import satellite from "./assets/satellite.png";
 
 import { COLORS } from "./constants/theme";
-// import { gradient2 } from "./constants/gradients";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
 import { FastOmit } from "styled-components/dist/types";
+import { Satellite } from "./components/Satellite";
+import { Star } from "./components/Star/Star";
+import { createStarCoords } from "./components/Star/createStarCoords";
+import { ShootingStar } from "./components/ShootingStar";
 
 const theme = {
   colors: COLORS,
@@ -87,6 +85,7 @@ const HeaderText = styled.h1`
 const SwooshImage = styled.img`
   position: absolute;
   bottom: 0;
+  width: 100%;
   z-index: 11;
 `;
 
@@ -108,48 +107,6 @@ const SwooshContainer = styled.div`
   overflow: hidden;
 `;
 
-const satelliteAnimation = keyframes`
-  0% {
-    top: 200px;
-    left: 0%;
-    transform: rotate(0deg);
-  }
-  25% {
-    top: 140px;
-    left: 50%;
-    transform: rotate(40deg);
-  }
-  50% {
-    top: 140px;
-    left: 100%;
-    opacity: 1;
-    transform: rotate(80deg);
-  }
-  51% {
-    top: 120px;
-    left: 100%;
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-    top: 200px;
-    left: 0%;
-  }
-`;
-
-const Satellite = styled.img`
-  height: 12px;
-  width: 12px;
-  position: absolute;
-  z-index: 10;
-  background-size: contain;
-  animation-name: ${satelliteAnimation};
-  animation-duration: 14s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-  /* animation-delay: 2s; */
-`;
-
 const MyColorBackgroundAttribute = (
   props: ExecutionContext &
     FastOmit<
@@ -168,57 +125,6 @@ const MyColorBackgroundAttribute = (
 const MyColor = styled.div.attrs(MyColorBackgroundAttribute)`
   width: 100%;
   height: 100%;
-`;
-
-const Star = styled.div<{
-  top: number;
-  left: number;
-  big: boolean;
-  opacity: 1 | 0;
-}>`
-  position: absolute;
-  top: ${(props) => props.top}px;
-  left: ${(props) => props.left}px;
-  width: ${(props) => (props.big ? 2 : 1)}px;
-  height: ${(props) => (props.big ? 2 : 1)}px;
-  background-color: #fff;
-  box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.5);
-  opacity: ${(props) => props.opacity};
-  transition: opacity 1.5s;
-`;
-
-const shootingStarAnimation = keyframes`
-  0% {
-    top: -25%;
-    right: 500px;
-  }
-  3% {
-    opacity: 0;
-    top: 100%;
-    right: 0px;
-  }
-  85% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-`;
-
-const ShootingStar = styled.div`
-  position: absolute;
-  right: 50%;
-  top: -13.59%;
-  width: 1px;
-  height: 70px;
-  background: #fff;
-  transform: rotate(-25deg);
-
-  animation-name: ${shootingStarAnimation};
-  animation-duration: 10s;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in;
-  animation-delay: 2s;
 `;
 
 const colorsHigh: HourlyColors = [
@@ -331,22 +237,10 @@ function App() {
     startTransition3(myTimer);
   };
 
-  const starCoords = useMemo(() => {
-    return Array.from({ length: 50 }, () => {
-      const maxLeft = swooshContainerRef.current?.clientWidth || 2000;
-      const maxTop = 450;
-      const fadeInHour =
-        Math.random() > 0.8 ? 21 : Math.random() > 0.3 ? 20 : 19;
-      const fadeOutHour = Math.random() > 0.8 ? 7 : Math.random() > 0.3 ? 6 : 5;
-      return {
-        left: Math.floor(Math.random() * maxLeft),
-        top: Math.floor(Math.random() * maxTop),
-        big: Math.random() > 0.7,
-        fadeInHour,
-        fadeOutHour,
-      };
-    });
-  }, []);
+  const starCoords = useMemo(
+    () => createStarCoords(swooshContainerRef.current?.clientWidth),
+    []
+  );
 
   useEffect(() => {
     // save intervalId to clear the interval when the
@@ -390,10 +284,11 @@ function App() {
 
             {starCoords.map(({ left, top, big, fadeInHour, fadeOutHour }) => (
               <Star
+                key={left + (top / fadeInHour) * fadeOutHour}
                 opacity={myTimer > fadeInHour || myTimer <= fadeOutHour ? 1 : 0}
-                big={big}
-                left={left}
-                top={top}
+                $big={big}
+                $left={left}
+                $top={top}
               />
             ))}
 
