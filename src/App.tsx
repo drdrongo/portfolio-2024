@@ -13,7 +13,7 @@ import airplane from "./assets/airplane.png";
 
 import { COLORS } from "./constants/theme";
 // import { gradient2 } from "./constants/gradients";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
 import { FastOmit } from "styled-components/dist/types";
 import { motion } from "framer-motion";
@@ -265,6 +265,22 @@ function App() {
     startTransition3(myTimer);
   };
 
+  const makeStarCoords = () => {
+    const coords = Array.from({ length: 50 }, () => {
+      const maxLeft = window.screen.width;
+      const maxTop = 400;
+      console.log({ maxTop, maxLeft });
+      return [
+        Math.floor(Math.random() * maxLeft),
+        Math.floor(Math.random() * maxTop),
+      ];
+    });
+    console.log("coords!", coords);
+    return coords;
+  };
+
+  const starCoords = useMemo(makeStarCoords, []);
+
   useEffect(() => {
     // save intervalId to clear the interval when the
     // component re-renders
@@ -303,46 +319,14 @@ function App() {
       <AppContainer>
         <SectionContainer>
           <SwooshContainer>
-            {(myTimer > 20 || myTimer <= 6) && (
-              <>
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={true}
-                  top={200}
-                  left={300}
-                />
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={false}
-                  top={184}
-                  left={200}
-                />
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={true}
-                  top={10}
-                  left={184}
-                />
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={false}
-                  top={300}
-                  left={122}
-                />
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={false}
-                  top={260}
-                  left={40}
-                />
-                <Star
-                  opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                  big={false}
-                  top={109}
-                  left={66}
-                />
-              </>
-            )}
+            {starCoords.map(([left, top]) => (
+              <Star
+                opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
+                big={Math.random() > 0.7}
+                left={left}
+                top={top}
+              />
+            ))}
 
             {/* How do I get these to fly across the screen? */}
             <Satellite
