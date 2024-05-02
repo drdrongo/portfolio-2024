@@ -1,6 +1,7 @@
 import {
   ExecutionContext,
   ThemeProvider,
+  keyframes,
   // keyframes
 } from "styled-components";
 import { styled } from "styled-components";
@@ -9,14 +10,12 @@ import hayato from "./assets/hayato-shaped.png";
 import blob from "./assets/blob.svg";
 import swoosh from "./assets/swoosh.svg";
 import satellite from "./assets/satellite.png";
-import airplane from "./assets/airplane.png";
 
 import { COLORS } from "./constants/theme";
 // import { gradient2 } from "./constants/gradients";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
 import { FastOmit } from "styled-components/dist/types";
-import { motion } from "framer-motion";
 
 const theme = {
   colors: COLORS,
@@ -109,16 +108,47 @@ const SwooshContainer = styled.div`
   overflow: hidden;
 `;
 
+const satelliteAnimation = keyframes`
+  0% {
+    top: 200px;
+    left: 0%;
+    transform: rotate(0deg);
+  }
+  25% {
+    top: 140px;
+    left: 50%;
+    transform: rotate(40deg);
+  }
+  50% {
+    top: 140px;
+    left: 100%;
+    opacity: 1;
+    transform: rotate(80deg);
+  }
+  51% {
+    top: 120px;
+    left: 100%;
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    top: 200px;
+    left: 0%;
+  }
+`;
+
 const Satellite = styled.img`
-  height: 15px;
-  width: 15px;
+  height: 12px;
+  width: 12px;
   position: absolute;
   z-index: 10;
-  /* top: 0;
-  left: 0; */
   background-size: contain;
+  animation-name: ${satelliteAnimation};
+  animation-duration: 14s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  /* animation-delay: 2s; */
 `;
-const Airplane = styled(Satellite)``;
 
 const MyColorBackgroundAttribute = (
   props: ExecutionContext &
@@ -155,6 +185,40 @@ const Star = styled.div<{
   box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.5);
   opacity: ${(props) => props.opacity};
   transition: opacity 1.5s;
+`;
+
+const shootingStarAnimation = keyframes`
+  0% {
+    top: -25%;
+    right: 500px;
+  }
+  3% {
+    opacity: 0;
+    top: 100%;
+    right: 0px;
+  }
+  85% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+`;
+
+const ShootingStar = styled.div`
+  position: absolute;
+  right: 50%;
+  top: -13.59%;
+  width: 1px;
+  height: 70px;
+  background: #fff;
+  transform: rotate(-25deg);
+
+  animation-name: ${shootingStarAnimation};
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+  animation-delay: 2s;
 `;
 
 const colorsHigh: HourlyColors = [
@@ -289,7 +353,7 @@ function App() {
     // component re-renders
     const intervalId = setInterval(() => {
       setMyTimer((prev) => (prev >= 23 ? 0 : prev + 1));
-    }, 1000);
+    }, 1500);
 
     // clear interval on re-render to avoid memory leaks
     return () => clearInterval(intervalId);
@@ -322,6 +386,8 @@ function App() {
       <AppContainer>
         <SectionContainer>
           <SwooshContainer ref={swooshContainerRef}>
+            {(myTimer > 22 || myTimer <= 4) && <ShootingStar />}
+
             {starCoords.map(({ left, top, big, fadeInHour, fadeOutHour }) => (
               <Star
                 opacity={myTimer > fadeInHour || myTimer <= fadeOutHour ? 1 : 0}
@@ -332,24 +398,10 @@ function App() {
             ))}
 
             {/* How do I get these to fly across the screen? */}
-            <Satellite
-              as={motion.img}
-              src={satellite}
-              alt="satellite"
-              initial={{ top: 400, left: "0%" }}
-              animate={{ top: 160, left: "100%" }}
-              transition={{ duration: 10, ease: "linear" }}
-            />
+            {(myTimer > 23 || myTimer <= 4) && (
+              <Satellite src={satellite} alt="satellite" />
+            )}
 
-            {/* // TODO: Is there a classier way to do this? It doesnt look good. */}
-            <Airplane
-              src={airplane}
-              alt="airplane"
-              as={motion.img}
-              initial={{ top: 600, right: "0%", transform: "scaleX(-1)" }}
-              animate={{ top: 40, right: "100%", transform: "scaleX(-1)" }}
-              transition={{ duration: 10, ease: "linear" }}
-            />
             <SwooshImage src={swoosh} alt="" />
 
             <MyColor color={gradientColors} />

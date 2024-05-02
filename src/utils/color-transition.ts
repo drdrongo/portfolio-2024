@@ -109,7 +109,7 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     );
 
     increment.current = calculateIncrement(distance, fps, duration);
-    transHandler.current = setInterval(transition, 1000 / fps);
+    transHandler.current = setInterval(transition, 1500 / fps);
   };
 
   const checkColor = (i: number) => {
