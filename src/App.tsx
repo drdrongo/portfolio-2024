@@ -13,7 +13,7 @@ import airplane from "./assets/airplane.png";
 
 import { COLORS } from "./constants/theme";
 // import { gradient2 } from "./constants/gradients";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
 import { FastOmit } from "styled-components/dist/types";
 import { motion } from "framer-motion";
@@ -241,6 +241,8 @@ const colorsLow: HourlyColors = [
 function App() {
   const [gradientColors, setGradientColors] = useState<string>();
 
+  const swooshContainerRef = useRef<HTMLDivElement>(null);
+
   const {
     hex: currentHex1,
     isReady: isReady1,
@@ -265,21 +267,22 @@ function App() {
     startTransition3(myTimer);
   };
 
-  const makeStarCoords = () => {
-    const coords = Array.from({ length: 50 }, () => {
-      const maxLeft = window.screen.width;
-      const maxTop = 400;
-      console.log({ maxTop, maxLeft });
-      return [
-        Math.floor(Math.random() * maxLeft),
-        Math.floor(Math.random() * maxTop),
-      ];
+  const starCoords = useMemo(() => {
+    return Array.from({ length: 50 }, () => {
+      const maxLeft = swooshContainerRef.current?.clientWidth || 2000;
+      const maxTop = 450;
+      const fadeInHour =
+        Math.random() > 0.8 ? 21 : Math.random() > 0.3 ? 20 : 19;
+      const fadeOutHour = Math.random() > 0.8 ? 7 : Math.random() > 0.3 ? 6 : 5;
+      return {
+        left: Math.floor(Math.random() * maxLeft),
+        top: Math.floor(Math.random() * maxTop),
+        big: Math.random() > 0.7,
+        fadeInHour,
+        fadeOutHour,
+      };
     });
-    console.log("coords!", coords);
-    return coords;
-  };
-
-  const starCoords = useMemo(makeStarCoords, []);
+  }, []);
 
   useEffect(() => {
     // save intervalId to clear the interval when the
@@ -318,11 +321,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <AppContainer>
         <SectionContainer>
-          <SwooshContainer>
-            {starCoords.map(([left, top]) => (
+          <SwooshContainer ref={swooshContainerRef}>
+            {starCoords.map(({ left, top, big, fadeInHour, fadeOutHour }) => (
               <Star
-                opacity={myTimer > 20 || myTimer <= 6 ? 1 : 0}
-                big={Math.random() > 0.7}
+                opacity={myTimer > fadeInHour || myTimer <= fadeOutHour ? 1 : 0}
+                big={big}
                 left={left}
                 top={top}
               />
