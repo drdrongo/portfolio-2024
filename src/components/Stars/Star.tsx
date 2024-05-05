@@ -8,24 +8,19 @@ interface StarProps {
   opacity: 1 | 0;
 }
 
-const MyColorBackgroundAttribute = (props: StarProps) => ({
-  $top: props.$top,
-  $left: props.$left,
-  $big: props.$big,
-  opacity: props.opacity,
+const getStarStyle = (props: StarProps) => ({
+  style: {
+    top: `${props.$top}px`,
+    left: `${props.$left}px`,
+    opacity: props.opacity,
+  },
 });
 
-export const Star = styled.div.attrs<StarProps>(MyColorBackgroundAttribute)`
+export const Star = styled.div.attrs<StarProps>(getStarStyle)`
   width: ${(props) => (props.$big ? 2 : 1)}px;
   height: ${(props) => (props.$big ? 2 : 1)}px;
-
   position: absolute;
   background-color: #fff;
   box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.5);
   transition: opacity 1.5s;
-
-  /* Apply styles using props received from the attributes function */
-  top: ${(props) => `${props.$top}px`};
-  left: ${(props) => `${props.$left}px`};
-  opacity: ${(props) => props.opacity};
 `;

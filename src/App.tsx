@@ -1,19 +1,13 @@
-import { ExecutionContext, ThemeProvider } from "styled-components";
+import { ThemeProvider } from "styled-components";
 import { styled } from "styled-components";
 import "./App.css";
 import hayato from "./assets/hayato-shaped.png";
 import blob from "./assets/blob.svg";
-import swoosh from "./assets/swoosh.svg";
-import satellite from "./assets/satellite.png";
 
 import { COLORS } from "./constants/theme";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HourlyColors, useColorTransition } from "./utils/color-transition";
-import { FastOmit } from "styled-components/dist/types";
-import { Satellite } from "./components/Satellite";
-import { Star } from "./components/Star/Star";
-import { createStarCoords } from "./components/Star/createStarCoords";
-import { ShootingStar } from "./components/ShootingStar";
+import { SwooshContainer } from "./components/SwooshContainer";
 
 const theme = {
   colors: COLORS,
@@ -21,7 +15,6 @@ const theme = {
 
 const AppContainer = styled.div`
   display: flex;
-
   flex-direction: column;
   align-items: center;
   width: 100vw;
@@ -82,13 +75,6 @@ const HeaderText = styled.h1`
   font-family: "poppins";
 `;
 
-const SwooshImage = styled.img`
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  z-index: 11;
-`;
-
 const AbsoluteContainer = styled.div`
   position: absolute;
   inset: 0;
@@ -98,33 +84,6 @@ const AbsoluteContainer = styled.div`
   align-items: center;
   width: 100%;
   min-height: 100vh;
-`;
-
-const SwooshContainer = styled.div`
-  position: absolute;
-  inset: 0;
-  z-index: 9;
-  overflow: hidden;
-`;
-
-const MyColorBackgroundAttribute = (
-  props: ExecutionContext &
-    FastOmit<
-      React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLDivElement>,
-        HTMLDivElement
-      >,
-      never
-    >
-) => ({
-  style: {
-    background: props.color,
-  },
-});
-
-const MyColor = styled.div.attrs(MyColorBackgroundAttribute)`
-  width: 100%;
-  height: 100%;
 `;
 
 const colorsHigh: HourlyColors = [
@@ -209,9 +168,7 @@ const colorsLow: HourlyColors = [
 ];
 
 function App() {
-  const [gradientColors, setGradientColors] = useState<string>();
-
-  const swooshContainerRef = useRef<HTMLDivElement>(null);
+  const [gradientColors, setGradientColors] = useState<string>("#000");
 
   const {
     hex: currentHex1,
@@ -229,35 +186,24 @@ function App() {
     startTransition: startTransition3,
   } = useColorTransition(colorsHigh);
 
-  const [myTimer, setMyTimer] = useState<number>(0);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setMyTimer(1);
-    }, 500);
-  }, []);
+  const [currentHour, setCurrentHour] = useState<number>(22);
 
   const startTransitions = () => {
-    startTransition1(myTimer);
-    startTransition2(myTimer);
-    startTransition3(myTimer);
+    startTransition1(currentHour);
+    startTransition2(currentHour);
+    startTransition3(currentHour);
   };
-
-  const starCoords = useMemo(
-    () => createStarCoords(swooshContainerRef.current?.clientWidth),
-    []
-  );
 
   useEffect(() => {
     // save intervalId to clear the interval when the
     // component re-renders
     const intervalId = setInterval(() => {
-      setMyTimer((prev) => (prev >= 23 ? 0 : prev + 1));
+      setCurrentHour((prev) => (prev >= 23 ? 0 : prev + 1));
     }, 1500);
 
     // clear interval on re-render to avoid memory leaks
     return () => clearInterval(intervalId);
-  }, [myTimer, setMyTimer]);
+  }, [currentHour, setCurrentHour]);
 
   useEffect(() => {
     const colorChangeIntv = setInterval(() => {
@@ -279,50 +225,16 @@ function App() {
       clearInterval(timeChangeIntv);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myTimer]);
+  }, [currentHour]);
 
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
         <SectionContainer>
-          <SwooshContainer ref={swooshContainerRef}>
-            {(myTimer > 22 || myTimer <= 4) && <ShootingStar />}
-
-            {starCoords.map(
-              ({ left, top, big, fadeInHour, fadeOutHour }, idx) => {
-                if (idx === 0) {
-                  return (
-                    <Star
-                      opacity={myTimer === 0 ? 1 : 0}
-                      $big={false}
-                      $left={0}
-                      $top={0}
-                    />
-                  );
-                }
-                return (
-                  <Star
-                    key={left + (top / fadeInHour) * fadeOutHour}
-                    opacity={
-                      myTimer >= fadeInHour || myTimer <= fadeOutHour ? 1 : 0
-                    }
-                    $big={big}
-                    $left={left}
-                    $top={top}
-                  />
-                );
-              }
-            )}
-
-            {/* How do I get these to fly across the screen? */}
-            {(myTimer > 23 || myTimer <= 4) && (
-              <Satellite src={satellite} alt="satellite" />
-            )}
-
-            <SwooshImage src={swoosh} alt="" />
-
-            <MyColor color={gradientColors} />
-          </SwooshContainer>
+          <SwooshContainer
+            currentHour={currentHour}
+            gradientColors={gradientColors}
+          />
 
           <AbsoluteContainer>
             <ContentContainer>

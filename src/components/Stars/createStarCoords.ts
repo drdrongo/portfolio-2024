@@ -1,6 +1,5 @@
-export const createStarCoords = (containerWidth = 2000) => {
-  console.log({ containerWidth });
-  return Array.from({ length: 50 }, () => {
+export const createStarCoords = (containerWidth: number) => {
+  return Array.from({ length: 80 }, () => {
     const maxLeft = containerWidth;
     const maxTop = 450;
     const fadeInHour = Math.random() > 0.8 ? 21 : Math.random() > 0.3 ? 20 : 19;
