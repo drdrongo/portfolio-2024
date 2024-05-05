@@ -231,6 +231,12 @@ function App() {
 
   const [myTimer, setMyTimer] = useState<number>(0);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setMyTimer(1);
+    }, 500);
+  }, []);
+
   const startTransitions = () => {
     startTransition1(myTimer);
     startTransition2(myTimer);
@@ -282,15 +288,31 @@ function App() {
           <SwooshContainer ref={swooshContainerRef}>
             {(myTimer > 22 || myTimer <= 4) && <ShootingStar />}
 
-            {starCoords.map(({ left, top, big, fadeInHour, fadeOutHour }) => (
-              <Star
-                key={left + (top / fadeInHour) * fadeOutHour}
-                opacity={myTimer > fadeInHour || myTimer <= fadeOutHour ? 1 : 0}
-                $big={big}
-                $left={left}
-                $top={top}
-              />
-            ))}
+            {starCoords.map(
+              ({ left, top, big, fadeInHour, fadeOutHour }, idx) => {
+                if (idx === 0) {
+                  return (
+                    <Star
+                      opacity={myTimer === 0 ? 1 : 0}
+                      $big={false}
+                      $left={0}
+                      $top={0}
+                    />
+                  );
+                }
+                return (
+                  <Star
+                    key={left + (top / fadeInHour) * fadeOutHour}
+                    opacity={
+                      myTimer >= fadeInHour || myTimer <= fadeOutHour ? 1 : 0
+                    }
+                    $big={big}
+                    $left={left}
+                    $top={top}
+                  />
+                );
+              }
+            )}
 
             {/* How do I get these to fly across the screen? */}
             {(myTimer > 23 || myTimer <= 4) && (
