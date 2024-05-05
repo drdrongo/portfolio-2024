@@ -195,13 +195,10 @@ function App() {
   };
 
   useEffect(() => {
-    // save intervalId to clear the interval when the
-    // component re-renders
     const intervalId = setInterval(() => {
       setCurrentHour((prev) => (prev >= 23 ? 0 : prev + 1));
     }, 1500);
 
-    // clear interval on re-render to avoid memory leaks
     return () => clearInterval(intervalId);
   }, [currentHour, setCurrentHour]);
 
