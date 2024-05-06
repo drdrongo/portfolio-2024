@@ -6,12 +6,11 @@ import blob from "./assets/blob.svg";
 
 import { COLORS } from "./constants/theme";
 import { useEffect, useState } from "react";
-import { HourlyColors, useColorTransition } from "./utils/color-transition";
+import { useColorTransition } from "./utils/color-transition";
 import { SwooshContainer } from "./components/SwooshContainer";
+import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
 
-const theme = {
-  colors: COLORS,
-};
+const theme = { colors: COLORS };
 
 const AppContainer = styled.div`
   display: flex;
@@ -85,87 +84,6 @@ const AbsoluteContainer = styled.div`
   width: 100%;
   min-height: 100vh;
 `;
-
-const colorsHigh: HourlyColors = [
-  [8, 2, 77],
-  [24, 5, 56],
-  [31, 31, 60],
-  [32, 32, 60],
-  [33, 33, 60],
-  [65, 66, 97],
-  [140, 119, 168],
-  [149, 174, 211],
-  [152, 205, 250],
-  [170, 229, 254],
-  [138, 221, 253],
-  [138, 225, 253],
-  [179, 233, 255],
-  [179, 235, 255],
-  [138, 219, 251],
-  [150, 225, 254],
-  [92, 187, 227],
-  [64, 156, 205],
-  [38, 113, 168],
-  [164, 64, 13],
-  [25, 17, 15],
-  [55, 39, 29],
-  [14, 13, 51],
-  [13, 4, 66],
-];
-
-const colorsMid: HourlyColors = [
-  [24, 19, 78],
-  [47, 13, 106],
-  [40, 40, 90],
-  [65, 65, 96],
-  [81, 81, 110],
-  [105, 106, 133],
-  [140, 119, 168],
-  [149, 174, 211],
-  [152, 205, 250],
-  [170, 229, 254],
-  [91, 161, 189],
-  [138, 225, 253],
-  [179, 233, 255],
-  [108, 162, 182],
-  [138, 219, 251],
-  [65, 151, 185],
-  [92, 187, 227],
-  [64, 156, 205],
-  [38, 113, 168],
-  [13, 56, 164],
-  [47, 36, 34],
-  [55, 39, 29],
-  [15, 13, 83],
-  [44, 35, 93],
-];
-
-const colorsLow: HourlyColors = [
-  [49, 44, 108],
-  [54, 27, 101],
-  [35, 35, 65],
-  [45, 45, 92],
-  [71, 71, 118],
-  [24, 14, 14],
-  [34, 3, 75],
-  [105, 129, 165],
-  [89, 141, 186],
-  [82, 164, 199],
-  [79, 169, 205],
-  [138, 225, 253],
-  [153, 226, 255],
-  [108, 162, 182],
-  [138, 219, 251],
-  [65, 151, 185],
-  [92, 187, 227],
-  [64, 156, 205],
-  [0, 60, 102],
-  [8, 28, 79],
-  [47, 36, 34],
-  [8, 6, 24],
-  [39, 37, 117],
-  [44, 35, 93],
-];
 
 function App() {
   const [gradientColors, setGradientColors] = useState<string>("#000");
