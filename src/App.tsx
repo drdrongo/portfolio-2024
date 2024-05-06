@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 import { useColorTransition } from "./utils/color-transition";
 import { SwooshContainer } from "./components/SwooshContainer";
 import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
+import { MySkills } from "./components/MySkills";
+
+const CONTENT_WIDTH = 840;
 
 const theme = { colors: COLORS };
 
@@ -17,6 +20,7 @@ const AppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100vw;
+  position: relative;
 `;
 
 const SectionContainer = styled.section`
@@ -34,7 +38,7 @@ const ContentContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 30px 0 20px;
-  width: 840px;
+  width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
 `;
 
@@ -83,6 +87,43 @@ const AbsoluteContainer = styled.div`
   align-items: center;
   width: 100%;
   min-height: 100vh;
+`;
+
+const NavbarOuter = styled.div`
+  position: fixed;
+  top: 0;
+  z-index: 99;
+  width: 100%;
+  /* border: 1px solid red; */
+  height: 80px;
+  display: flex;
+  justify-content: center;
+`;
+
+const NavbarInner = styled.nav<{ isVisible: boolean }>`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+  width: ${CONTENT_WIDTH}px;
+  position: absolute;
+
+  transition: top 0.3s ease-out;
+  top: ${(props) => (props.isVisible ? 0 : -100)}%;
+`;
+
+const Header = styled.a`
+  color: white;
+  margin-right: auto;
+  font-size: 1.8rem;
+  font-weight: bold;
+`;
+
+const NavLink = styled.a`
+  color: white;
+  font-size: 1.4rem;
+  padding: 8px;
 `;
 
 function App() {
@@ -142,9 +183,23 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentHour]);
 
+  //I should have two navbars. The first is stuck to the top of the page.
+  // The second should appear when the user has scrolled a certain amount.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
+        <NavbarOuter>
+          <NavbarInner isVisible={isNavbarVisible}>
+            <Header href="#">Hayato Clarke</Header>
+            <NavLink href="#">Home</NavLink>
+            <NavLink href="#">School</NavLink>
+            <NavLink href="#">Work</NavLink>
+            <NavLink href="#">Tennis</NavLink>
+          </NavbarInner>
+        </NavbarOuter>
         <SectionContainer>
           <SwooshContainer
             currentHour={currentHour}
@@ -171,6 +226,11 @@ function App() {
               </BlobContainer>
             </ContentContainer>
           </AbsoluteContainer>
+        </SectionContainer>
+
+        {/* My Skills */}
+        <SectionContainer>
+          <MySkills />
         </SectionContainer>
       </AppContainer>
     </ThemeProvider>
