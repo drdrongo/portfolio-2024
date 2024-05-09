@@ -10,6 +10,7 @@ import { useColorTransition } from "./utils/color-transition";
 import { SwooshContainer } from "./components/SwooshContainer";
 import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
 import { MySkills } from "./components/MySkills";
+import { Projects } from "./components/Projects";
 
 const CONTENT_WIDTH = 840;
 
@@ -23,13 +24,14 @@ const AppContainer = styled.div`
   position: relative;
 `;
 
-const SectionContainer = styled.section`
+const SectionContainer = styled.section<{ background?: string }>`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  background-color: ${(props) => props.theme.colors.navy};
+  background-color: ${(props) => props.background ?? props.theme.colors.navy};
   position: relative;
 `;
 
@@ -124,6 +126,18 @@ const NavLink = styled.a`
   color: white;
   font-size: 1.4rem;
   padding: 8px;
+`;
+
+const colorFadeHeight = 250;
+const ColorFade = styled.div<{ direction: "up" | "down" }>`
+  position: absolute;
+  top: ${(props) => (props.direction === "up" ? -colorFadeHeight : 0)}px;
+  height: ${colorFadeHeight}px;
+  width: 100%;
+  background: linear-gradient(
+    ${(props) =>
+      props.direction === "up" ? "#00000000, #000" : "#000, #00000000"}
+  );
 `;
 
 function App() {
@@ -230,7 +244,14 @@ function App() {
 
         {/* My Skills */}
         <SectionContainer>
+          <ColorFade direction="down" />
           <MySkills />
+        </SectionContainer>
+
+        {/* My Projects */}
+        <SectionContainer background="black">
+          <ColorFade direction="up" />
+          <Projects />
         </SectionContainer>
       </AppContainer>
     </ThemeProvider>

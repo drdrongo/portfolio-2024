@@ -40,7 +40,7 @@ const HeaderText = styled.h1`
 
 const ExplanationText = styled.p`
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 `;
 
 const SkillsContainer = styled.div`
@@ -89,7 +89,7 @@ const TechName = styled.span`
 `;
 
 const SkillTitle = styled.h3`
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 `;
 
 const TechBox = ({ src, name }: { src: string; name: string }) => {
@@ -112,11 +112,10 @@ export function MySkills() {
           <SkillsColumn>
             <SkillTitle>FRONTEND</SkillTitle>
             <SkillsGrid>
-              <TechBox src={aws} name="aws" />
-              <TechBox src={docker} name="docker" />
-              <TechBox src={firebase} name="firebase" />
-              <TechBox src={github} name="github" />
-              <TechBox src={gitlab} name="gitlab" />
+              <TechBox src={react} name="react" />
+              <TechBox src={sass} name="sass" />
+              <TechBox src={styledComponents} name="styled-components" />
+              <TechBox src={typescript} name="typescript" />
             </SkillsGrid>
           </SkillsColumn>
 
@@ -134,10 +133,11 @@ export function MySkills() {
           <SkillsColumn>
             <SkillTitle>TOOLS</SkillTitle>
             <SkillsGrid>
-              <TechBox src={react} name="react" />
-              <TechBox src={sass} name="sass" />
-              <TechBox src={styledComponents} name="styled-components" />
-              <TechBox src={typescript} name="typescript" />
+              <TechBox src={aws} name="aws" />
+              <TechBox src={docker} name="docker" />
+              <TechBox src={firebase} name="firebase" />
+              <TechBox src={github} name="github" />
+              <TechBox src={gitlab} name="gitlab" />
             </SkillsGrid>
           </SkillsColumn>
         </SkillsContainer>
