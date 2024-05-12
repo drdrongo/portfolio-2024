@@ -1,5 +1,7 @@
 import { styled } from "styled-components";
 import movieLab from "/src/assets/movieLab.png";
+import outings from "/src/assets/outings.png";
+import { Project } from "./elements/Project";
 
 const CONTENT_WIDTH = 840;
 
@@ -11,13 +13,14 @@ const ContentContainer = styled.div`
   padding: 0 30px 0 20px;
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
+  margin-bottom: 64px;
 `;
 
 const TextContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 32px;
   width: 100%;
 `;
 
@@ -30,93 +33,41 @@ const ExplanationText = styled.p`
   margin-bottom: 24px;
 `;
 
-const ProjectContainer = styled.div<{ direction: "ltr" | "rtl" }>`
-  width: 100%;
-  height: 400px;
-  display: flex;
-  flex-direction: ${(props) =>
-    props.direction === "ltr" ? "row" : "row-reverse"};
-  align-items: stretch;
-  justify-content: space-between;
-  margin-bottom: 16px;
-`;
-
-const ProjectPreview = styled.img`
-  object-fit: contain;
-  max-height: 100%;
-  max-width: 45%;
-`;
-
-const ProjectDescriptionBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-`;
-
-const SkillPillBox = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-
-const SkillPill = styled.div`
-  background-color: grey;
-  color: white;
-  padding: 4px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 export function Projects() {
+  const myProjects: {
+    title: string;
+    description: string;
+    src: string;
+    skills: string[];
+  }[] = [
+    {
+      title: "Movie Lab",
+      description: "This was a really cool project to do",
+      src: movieLab,
+      skills: ["React", "NextJS", "CSS-Modules"],
+    },
+    {
+      title: "Outings",
+      description:
+        "A small app made for my partner and I to keep track of things we want to do together, and to make date decisions easier.",
+      src: outings,
+      skills: ["React", "PWA", "NextJS", "CSS-Modules"],
+    },
+  ];
+
   return (
     <ContentContainer>
       <TextContent>
         <HeaderText>Projects</HeaderText>
         <ExplanationText>Check them out</ExplanationText>
 
-        {/* Movie Lab */}
-        <ProjectContainer direction="ltr">
-          <ProjectPreview src={movieLab} alt="Movie Lab" />
-          <ProjectDescriptionBox>
-            <h1>The Movie Lab</h1>
-            <p>This was a really cool project to do.</p>
-            <SkillPillBox>
-              <SkillPill>React</SkillPill>
-              <SkillPill>NextJS</SkillPill>
-              <SkillPill>StyledComponents</SkillPill>
-            </SkillPillBox>
-          </ProjectDescriptionBox>
-        </ProjectContainer>
-
-        {/* SOmething else */}
-        <ProjectContainer direction="rtl">
-          <ProjectPreview src={movieLab} alt="Movie Lab" />
-          <ProjectDescriptionBox>
-            <h1>The Movie Lab</h1>
-            <p>This was a really cool project to do.</p>
-            <SkillPillBox>
-              <SkillPill>React</SkillPill>
-              <SkillPill>NextJS</SkillPill>
-              <SkillPill>StyledComponents</SkillPill>
-            </SkillPillBox>
-          </ProjectDescriptionBox>
-        </ProjectContainer>
-
-        {/* Third item */}
-        <ProjectContainer direction="ltr">
-          <ProjectPreview src={movieLab} alt="Movie Lab" />
-          <ProjectDescriptionBox>
-            <h1>The Movie Lab</h1>
-            <p>This was a really cool project to do.</p>
-            <SkillPillBox>
-              <SkillPill>React</SkillPill>
-              <SkillPill>NextJS</SkillPill>
-              <SkillPill>StyledComponents</SkillPill>
-            </SkillPillBox>
-          </ProjectDescriptionBox>
-        </ProjectContainer>
+        {myProjects.map((props, idx) => (
+          <Project
+            key={props.title}
+            {...props}
+            direction={idx % 2 === 0 ? "ltr" : "rtl"}
+          />
+        ))}
       </TextContent>
     </ContentContainer>
   );

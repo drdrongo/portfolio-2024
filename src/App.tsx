@@ -24,14 +24,14 @@ const AppContainer = styled.div`
   position: relative;
 `;
 
-const SectionContainer = styled.section<{ background?: string }>`
+const SectionContainer = styled.section<{ $background?: string }>`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  background-color: ${(props) => props.background ?? props.theme.colors.navy};
+  background-color: ${(props) => props.$background ?? props.theme.colors.navy};
   position: relative;
 `;
 
@@ -102,7 +102,7 @@ const NavbarOuter = styled.div`
   justify-content: center;
 `;
 
-const NavbarInner = styled.nav<{ isVisible: boolean }>`
+const NavbarInner = styled.nav<{ $isVisible: boolean }>`
   height: 100%;
   display: flex;
   align-items: center;
@@ -112,7 +112,7 @@ const NavbarInner = styled.nav<{ isVisible: boolean }>`
   position: absolute;
 
   transition: top 0.3s ease-out;
-  top: ${(props) => (props.isVisible ? 0 : -100)}%;
+  top: ${(props) => (props.$isVisible ? 0 : -100)}%;
 `;
 
 const Header = styled.a`
@@ -206,7 +206,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <AppContainer>
         <NavbarOuter>
-          <NavbarInner isVisible={isNavbarVisible}>
+          <NavbarInner $isVisible={isNavbarVisible}>
             <Header href="#">Hayato Clarke</Header>
             <NavLink href="#">Home</NavLink>
             <NavLink href="#">School</NavLink>
@@ -249,7 +249,7 @@ function App() {
         </SectionContainer>
 
         {/* My Projects */}
-        <SectionContainer background="black">
+        <SectionContainer $background="black">
           <ColorFade direction="up" />
           <Projects />
         </SectionContainer>
