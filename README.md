@@ -17,6 +17,14 @@
 
 ---
 
+### TODOS:
+
+- [] Update Movie-Lab's upcoming movies to update properly
+- [] Update outing app to have a proper demo version
+- [] Finish the party-stream app
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

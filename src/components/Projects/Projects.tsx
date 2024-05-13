@@ -38,12 +38,14 @@ export function Projects() {
     title: string;
     description: string;
     src: string;
+    url: string;
     skills: string[];
   }[] = [
     {
       title: "Movie Lab",
       description: "This was a really cool project to do",
       src: movieLab,
+      url: "https://movie-lab-eight.vercel.app/",
       skills: ["React", "NextJS", "CSS-Modules"],
     },
     {
@@ -51,6 +53,7 @@ export function Projects() {
       description:
         "A small app made for my partner and I to keep track of things we want to do together, and to make date decisions easier.",
       src: outings,
+      url: "https://outings.vercel.app/",
       skills: ["React", "PWA", "NextJS", "CSS-Modules"],
     },
   ];
