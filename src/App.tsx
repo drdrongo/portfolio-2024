@@ -8,7 +8,14 @@ import { COLORS } from "./constants/theme";
 import { useEffect, useState } from "react";
 import { useColorTransition } from "./utils/color-transition";
 import { SwooshContainer } from "./components/SwooshContainer";
-import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
+import {
+  colorsHigh,
+  colorsHigh2,
+  colorsLow,
+  colorsLow2,
+  colorsMid,
+  colorsMid2,
+} from "./constants/hourlyColors";
 import { MySkills } from "./components/MySkills";
 import { Projects } from "./components/Projects";
 import { Navbar } from "./components/Navbar";
@@ -119,7 +126,7 @@ function App() {
     hex: currentHex1,
     isReady: isReady1,
     startTransition: startTransition1,
-  } = useColorTransition(colorsLow);
+  } = useColorTransition(colorsHigh);
   const {
     hex: currentHex2,
     isReady: isReady2,
@@ -129,9 +136,9 @@ function App() {
     hex: currentHex3,
     isReady: isReady3,
     startTransition: startTransition3,
-  } = useColorTransition(colorsHigh);
+  } = useColorTransition(colorsLow);
 
-  const [currentHour, setCurrentHour] = useState<number>(22);
+  const [currentHour, setCurrentHour] = useState<number>(8);
 
   const startTransitions = () => {
     startTransition1(currentHour);
@@ -139,7 +146,11 @@ function App() {
     startTransition3(currentHour);
   };
 
+  const [foo] = useState(false);
+
   useEffect(() => {
+    if (foo) return;
+
     const intervalId = setInterval(() => {
       setCurrentHour((prev) => (prev >= 23 ? 0 : prev + 1));
     }, 1500);
