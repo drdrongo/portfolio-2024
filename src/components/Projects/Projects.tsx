@@ -10,7 +10,7 @@ const ContentContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 30px 0 20px;
+  padding: 0 30px;
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
   margin-bottom: 64px;

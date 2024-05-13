@@ -19,9 +19,9 @@ const CONTENT_WIDTH = 840;
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 0 30px 0 20px;
+  padding: 0 30px;
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
 `;

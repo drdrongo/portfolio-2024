@@ -11,8 +11,11 @@ import { SwooshContainer } from "./components/SwooshContainer";
 import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
 import { MySkills } from "./components/MySkills";
 import { Projects } from "./components/Projects";
+import { Navbar } from "./components/Navbar";
+import { Contact } from "./components/Contact";
 
 const CONTENT_WIDTH = 840;
+const COLOR_FADE_HEIGHT = 250;
 
 const theme = { colors: COLORS };
 
@@ -24,7 +27,9 @@ const AppContainer = styled.div`
   position: relative;
 `;
 
-const SectionContainer = styled.section<{ $background?: string }>`
+const SectionContainer = styled.section<{
+  $background?: string;
+}>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -33,13 +38,14 @@ const SectionContainer = styled.section<{ $background?: string }>`
   min-height: 100vh;
   background-color: ${(props) => props.$background ?? props.theme.colors.navy};
   position: relative;
+  padding-top: ${COLOR_FADE_HEIGHT + 20}px;
 `;
 
 const ContentContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px 0 20px;
+  padding: 0 30px;
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
 `;
@@ -59,7 +65,7 @@ const Image = styled.img`
 `;
 
 const RotatedImage = styled(Image)`
-  transform: rotate(54deg) translateY(-10px);
+  transform: rotate(-98deg) translateY(6px) translateX(-11px);
   position: absolute;
   inset: 0;
 `;
@@ -91,52 +97,18 @@ const AbsoluteContainer = styled.div`
   min-height: 100vh;
 `;
 
-const NavbarOuter = styled.div`
-  position: fixed;
-  top: 0;
-  z-index: 99;
-  width: 100%;
-  /* border: 1px solid red; */
-  height: 80px;
-  display: flex;
-  justify-content: center;
-`;
-
-const NavbarInner = styled.nav<{ $isVisible: boolean }>`
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  justify-content: flex-end;
-  width: ${CONTENT_WIDTH}px;
-  position: absolute;
-
-  transition: top 0.3s ease-out;
-  top: ${(props) => (props.$isVisible ? 0 : -100)}%;
-`;
-
-const Header = styled.a`
-  color: white;
-  margin-right: auto;
-  font-size: 1.8rem;
-  font-weight: bold;
-`;
-
-const NavLink = styled.a`
-  color: white;
-  font-size: 1.4rem;
-  padding: 8px;
-`;
-
-const colorFadeHeight = 250;
 const ColorFade = styled.div<{ direction: "up" | "down" }>`
   position: absolute;
-  top: ${(props) => (props.direction === "up" ? -colorFadeHeight : 0)}px;
-  height: ${colorFadeHeight}px;
+  /* top: ${(props) =>
+    props.direction === "up" ? -COLOR_FADE_HEIGHT : 0}px; */
+  top: 0;
+  height: ${COLOR_FADE_HEIGHT}px;
   width: 100%;
   background: linear-gradient(
     ${(props) =>
-      props.direction === "up" ? "#00000000, #000" : "#000, #00000000"}
+      props.direction === "up"
+        ? `${props.theme.colors.navy}, #000`
+        : `#000, ${props.theme.colors.navy}`}
   );
 `;
 
@@ -205,16 +177,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
-        <NavbarOuter>
-          <NavbarInner $isVisible={isNavbarVisible}>
-            <Header href="#">Hayato Clarke</Header>
-            <NavLink href="#">Home</NavLink>
-            <NavLink href="#">School</NavLink>
-            <NavLink href="#">Work</NavLink>
-            <NavLink href="#">Tennis</NavLink>
-          </NavbarInner>
-        </NavbarOuter>
-        <SectionContainer>
+        <Navbar isNavbarVisible={isNavbarVisible} />
+        <SectionContainer id="top">
           <SwooshContainer
             currentHour={currentHour}
             gradientColors={gradientColors}
@@ -243,15 +207,21 @@ function App() {
         </SectionContainer>
 
         {/* My Skills */}
-        <SectionContainer>
+        <SectionContainer id="skills">
           <ColorFade direction="down" />
           <MySkills />
         </SectionContainer>
 
         {/* My Projects */}
-        <SectionContainer $background="black">
+        <SectionContainer $background="black" id="projects">
           <ColorFade direction="up" />
           <Projects />
+        </SectionContainer>
+
+        {/* Contact */}
+        <SectionContainer id="contact">
+          <ColorFade direction="down" />
+          <Contact />
         </SectionContainer>
       </AppContainer>
     </ThemeProvider>
