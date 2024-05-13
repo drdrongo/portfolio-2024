@@ -136,10 +136,9 @@ function App() {
     hex: currentHex3,
     isReady: isReady3,
     startTransition: startTransition3,
-  } = useColorTransition(colorsLow);
+  } = useColorTransition(colorsLow2);
 
   const [currentHour, setCurrentHour] = useState<number>(8);
-
   const startTransitions = () => {
     startTransition1(currentHour);
     startTransition2(currentHour);
