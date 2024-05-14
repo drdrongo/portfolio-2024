@@ -33,15 +33,20 @@ export type HourlyColors = [
 // Duration is not what it says. It's a multiplier in the calculateIncrement() function.
 // duration = 1-4, fast-to-slow
 
-export const useColorTransition = (hourlyColors: HourlyColors) => {
+export const useColorTransition = (
+  hourlyColors: HourlyColors,
+  initialHour: number
+) => {
   const fps = 30;
   const duration = 4;
 
   const isCompletedRef = useRef(false);
-  const increment = useRef<RGB>([0, 0, 0]);
+  const increment = useRef<RGB>(hourlyColors[initialHour]);
   const transHandler = useRef<number>();
-  const currentColor = useRef(hourlyColors[0]);
-  const targetColor = useRef<RGB>(hourlyColors[1]);
+  const currentColor = useRef(hourlyColors[initialHour]);
+  const targetColor = useRef<RGB>(
+    hourlyColors[initialHour + 1 > hourlyColors.length - 1 ? 0 : initialHour]
+  );
   const currentHex = useRef<string>(rgb2hex(currentColor.current));
 
   // Calculates the distance between the RGB values.
@@ -63,7 +68,6 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     duration = 1
   ): RGB {
     const tempIncrement: RGB = [0, 0, 0];
-    // TODO: Can I change it to calculate based on the distance maybe? So that it always takes one second?
     for (let i = 0; i < distanceArray.length; i++) {
       let incr = Math.abs(Math.floor(distanceArray[i] / (fps * duration)));
       if (incr === 0) {
@@ -145,5 +149,9 @@ export const useColorTransition = (hourlyColors: HourlyColors) => {
     }
   };
 
-  return { hex: currentHex, isReady: isCompletedRef.current, startTransition };
+  return {
+    hex: currentHex,
+    isCompletedRef,
+    startTransition,
+  };
 };

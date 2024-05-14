@@ -5,24 +5,16 @@ import hayato from "./assets/hayato-shaped.png";
 import blob from "./assets/blob.svg";
 
 import { COLORS } from "./constants/theme";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useColorTransition } from "./utils/color-transition";
 import { SwooshContainer } from "./components/SwooshContainer";
-import {
-  colorsHigh,
-  colorsHigh2,
-  colorsLow,
-  colorsLow2,
-  colorsMid,
-  colorsMid2,
-} from "./constants/hourlyColors";
+import { colorsHigh, colorsLow, colorsMid } from "./constants/hourlyColors";
 import { MySkills } from "./components/MySkills";
 import { Projects } from "./components/Projects";
 import { Navbar } from "./components/Navbar";
 import { Contact } from "./components/Contact";
 
 const CONTENT_WIDTH = 840;
-const COLOR_FADE_HEIGHT = 250;
 
 const theme = { colors: COLORS };
 
@@ -42,10 +34,15 @@ const SectionContainer = styled.section<{
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background-color: ${(props) => props.$background ?? props.theme.colors.navy};
   position: relative;
-  padding-top: ${COLOR_FADE_HEIGHT + 20}px;
+  padding-top: 90px;
+  padding-bottom: 40px;
+`;
+
+const TopSectionContainer = styled(SectionContainer)`
+  min-height: 100vh;
 `;
 
 const ContentContainer = styled.div`
@@ -105,11 +102,8 @@ const AbsoluteContainer = styled.div`
 `;
 
 const ColorFade = styled.div<{ direction: "up" | "down" }>`
-  position: absolute;
-  /* top: ${(props) =>
-    props.direction === "up" ? -COLOR_FADE_HEIGHT : 0}px; */
   top: 0;
-  height: ${COLOR_FADE_HEIGHT}px;
+  height: 200px;
   width: 100%;
   background: linear-gradient(
     ${(props) =>
@@ -119,45 +113,62 @@ const ColorFade = styled.div<{ direction: "up" | "down" }>`
   );
 `;
 
-function App() {
-  const [gradientColors, setGradientColors] = useState<string>("#000");
+const INITIAL_HOUR = 17;
 
+function App() {
   const {
     hex: currentHex1,
-    isReady: isReady1,
     startTransition: startTransition1,
-  } = useColorTransition(colorsHigh);
+    isCompletedRef: isCompletedRef1,
+  } = useColorTransition(colorsHigh, INITIAL_HOUR);
   const {
     hex: currentHex2,
-    isReady: isReady2,
     startTransition: startTransition2,
-  } = useColorTransition(colorsMid);
+    isCompletedRef: isCompletedRef2,
+  } = useColorTransition(colorsMid, INITIAL_HOUR);
   const {
     hex: currentHex3,
-    isReady: isReady3,
     startTransition: startTransition3,
-  } = useColorTransition(colorsLow2);
+    isCompletedRef: isCompletedRef3,
+  } = useColorTransition(colorsLow, INITIAL_HOUR);
 
-  const [currentHour, setCurrentHour] = useState<number>(8);
-  const startTransitions = () => {
+  const [gradientColors, setGradientColors] = useState<string>(
+    `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
+  );
+
+  const [currentHour, setCurrentHour] = useState<number>(INITIAL_HOUR);
+
+  const startTransitions = useCallback(() => {
     startTransition1(currentHour);
     startTransition2(currentHour);
     startTransition3(currentHour);
-  };
-
-  const [foo] = useState(false);
+  }, [currentHour, startTransition1, startTransition2, startTransition3]);
 
   useEffect(() => {
-    if (foo) return;
-
     const intervalId = setInterval(() => {
-      setCurrentHour((prev) => (prev >= 23 ? 0 : prev + 1));
+      if (
+        isCompletedRef1.current &&
+        isCompletedRef2.current &&
+        isCompletedRef3.current
+      ) {
+        setCurrentHour((prev) => (prev >= 23 ? 0 : prev + 1));
+      }
     }, 1500);
 
     return () => clearInterval(intervalId);
-  }, [currentHour, setCurrentHour]);
+  }, [
+    currentHour,
+    setCurrentHour,
+    isCompletedRef1,
+    isCompletedRef2,
+    isCompletedRef3,
+  ]);
 
   useEffect(() => {
+    setGradientColors(
+      `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
+    );
+
     const colorChangeIntv = setInterval(() => {
       setGradientColors(
         `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
@@ -167,7 +178,11 @@ function App() {
     startTransitions();
 
     const timeChangeIntv = setInterval(() => {
-      if (isReady1 && isReady2 && isReady3) {
+      if (
+        isCompletedRef1.current &&
+        isCompletedRef2.current &&
+        isCompletedRef3.current
+      ) {
         startTransitions();
       }
     }, 200);
@@ -188,7 +203,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <AppContainer>
         <Navbar isNavbarVisible={isNavbarVisible} />
-        <SectionContainer id="top">
+        <TopSectionContainer id="top">
           <SwooshContainer
             currentHour={currentHour}
             gradientColors={gradientColors}
@@ -214,23 +229,29 @@ function App() {
               </BlobContainer>
             </ContentContainer>
           </AbsoluteContainer>
-        </SectionContainer>
+        </TopSectionContainer>
 
         {/* My Skills */}
+        <ColorFade direction="down" />
+
         <SectionContainer id="skills">
-          <ColorFade direction="down" />
+          {/* <ColorFade direction="down" /> */}
           <MySkills />
         </SectionContainer>
 
         {/* My Projects */}
+        <ColorFade direction="up" />
+
         <SectionContainer $background="black" id="projects">
-          <ColorFade direction="up" />
+          {/* <ColorFade direction="up" /> */}
           <Projects />
         </SectionContainer>
 
         {/* Contact */}
+        <ColorFade direction="down" />
+
         <SectionContainer id="contact">
-          <ColorFade direction="down" />
+          {/* <ColorFade direction="down" /> */}
           <Contact />
         </SectionContainer>
       </AppContainer>
