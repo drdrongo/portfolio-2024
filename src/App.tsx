@@ -113,7 +113,7 @@ const ColorFade = styled.div<{ direction: "up" | "down" }>`
   );
 `;
 
-const INITIAL_HOUR = 17;
+const INITIAL_HOUR = 18;
 
 function App() {
   const {
@@ -233,25 +233,19 @@ function App() {
 
         {/* My Skills */}
         <ColorFade direction="down" />
-
         <SectionContainer id="skills">
-          {/* <ColorFade direction="down" /> */}
           <MySkills />
         </SectionContainer>
 
         {/* My Projects */}
         <ColorFade direction="up" />
-
         <SectionContainer $background="black" id="projects">
-          {/* <ColorFade direction="up" /> */}
           <Projects />
         </SectionContainer>
 
         {/* Contact */}
         <ColorFade direction="down" />
-
         <SectionContainer id="contact">
-          {/* <ColorFade direction="down" /> */}
           <Contact />
         </SectionContainer>
       </AppContainer>

@@ -19,6 +19,16 @@
 
 ### TODOS:
 
+`This Project:`
+
+- [] Deploy from dist folder (get simple html file instead of client-side) - SSR?
+- [] Contact Form
+- [] On-scroll transition in
+- [] Footer
+- []
+
+`Other Projects:`
+
 - [] Update Movie-Lab's upcoming movies to update properly
 - [] Update outing app to have a proper demo version
 - [] Finish the party-stream app
