@@ -25,7 +25,7 @@
 - [] Contact Form
 - [] On-scroll transition in
 - [] Footer
-- []
+- [] SSR?
 
 `Other Projects:`
 
