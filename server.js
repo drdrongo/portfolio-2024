@@ -2,9 +2,9 @@ import fs from 'node:fs/promises'
 import express from 'express'
 
 // Constants
-const isProduction = process.env.NODE_ENV === 'production'
-const port = process.env.PORT || 5173
-const base = process.env.BASE || '/'
+const isProduction = import.meta.env.NODE_ENV === 'production'
+const port = import.meta.env.PORT || 5173
+const base = import.meta.env.BASE || '/'
 
 // Cached production assets
 const templateHtml = isProduction
@@ -69,3 +69,4 @@ app.use('*', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })
+

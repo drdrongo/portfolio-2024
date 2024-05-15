@@ -7,19 +7,19 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: "hayatoclarke@gmail.com",
-    pass: process.env.GMAIL_APP_PASSWORD,
+    pass: import.meta.env.GMAIL_APP_PASSWORD,
   },
 });
 
 // async..await is not allowed in global scope, must use a wrapper
-async function main() {
+async function main({ text }) {
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
-    to: "bar@example.com, baz@example.com", // list of receivers
-    subject: "Hello ✔", // Subject line
+    from: '"Hayato Portfolio" <hayatoclarke@gmail.com>', // sender address
+    to: "hayatoclarke@gmail.com", // list of receivers
+    subject: "Portfolio - Message From User", // Subject line
     text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
+    // html: "<b>Hello world?</b>", // html body
   });
 
   console.log("Message sent: %s", info.messageId);
