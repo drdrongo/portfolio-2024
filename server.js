@@ -53,20 +53,22 @@ app.get('/portfolio-2024/foobar', (req, res) => {
   res.status(200).send({ message: 'TEST' })
 });
 
-app.use(express.json())
-app.post('/send-mail', async (req, res) => {
-  const { text, from } = req.body;
+app.use(express.json());
 
-  if (!text || !from) {
-    return res.status(400).send({ error: 'Text and recipient email are required' });
+app.post('/send-mail', async (req, res) => {
+  const { fromName, fromEmail, message } = req.body;
+
+  if (!message || !fromName || !fromEmail) {
+    return res.status(400).send({ error: 'Text, name, and email are required' });
   }
 
   try {
     const info = await transporter.sendMail({
-      from: '"Hayato Portfolio" <hayatoclarke@gmail.com>', // sender address
+      from: `"Portfolio: ${fromEmail}" <hayatoclarke@gmail.com>`, // sender address
       to: "hayatoclarke@gmail.com", // list of receivers
-      subject: 'Portfolio - Message From User', // Subject line
-      text: text, // plain text body
+      subject: `Portfolio - Message From ${fromName}`, // Subject line
+      text: `Sender: ${fromName} <${fromEmail}>
+      ${message}`,
       // html: "<b>Hello world?</b>", // html body
     });
 
