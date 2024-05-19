@@ -38,7 +38,6 @@ if (!isProduction) {
   app.use(base, sirv('./dist/client', { extensions: [] }))
 }
 
-
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   host: 'smtp.gmail.com',
@@ -51,8 +50,9 @@ const transporter = nodemailer.createTransport({
 });
 
 app.get('/portfolio-2024/foobar', (req, res) => {
-  res.status(200).send({ message: 'farts' })
+  res.status(200).send({ message: 'TEST' })
 });
+
 app.use(express.json())
 app.post('/send-mail', async (req, res) => {
   const { text, from } = req.body;
