@@ -56,19 +56,21 @@ app.get('/portfolio-2024/foobar', (req, res) => {
 app.use(express.json());
 
 app.post('/send-mail', async (req, res) => {
-  const { fromName, fromEmail, message } = req.body;
+  console.log(req.body, 'this is body')
+  const { name, email, message } = req.body;
 
-  if (!message || !fromName || !fromEmail) {
+  if (!message || !name || !email) {
     return res.status(400).send({ error: 'Text, name, and email are required' });
   }
 
   try {
     const info = await transporter.sendMail({
-      from: `"Portfolio: ${fromEmail}" <hayatoclarke@gmail.com>`, // sender address
+      from: `"Portfolio: ${email}" <${email}>`, // sender address
       to: "hayatoclarke@gmail.com", // list of receivers
-      subject: `Portfolio - Message From ${fromName}`, // Subject line
-      text: `Sender: ${fromName} <${fromEmail}>
-      ${message}`,
+      subject: `Portfolio - Message From ${name}`, // Subject line
+      text: `Sender: ${name} <${email}>
+
+${message}`,
       // html: "<b>Hello world?</b>", // html body
     });
 
