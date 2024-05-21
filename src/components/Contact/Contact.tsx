@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { styled } from "styled-components";
+import CSSTransitionGroup from "react-transition-group/CSSTransitionGroup";
 
+// TODO: Implement this: https://reactcommunity.org/react-transition-group/css-transition
 const CONTENT_WIDTH = 840;
 
 const ContentContainer = styled.div`
@@ -30,10 +32,28 @@ const ExplanationText = styled.p`
   margin-bottom: 24px;
 `;
 
+const appearDuration = 500;
+const transitionName = `example`;
+
+const Container = styled.section`
+  font-size: 1.5em;
+  padding: 0;
+  margin: 0;
+
+  &.${transitionName}-appear {
+    opacity: 0.01;
+  }
+
+  &.${transitionName}-appear-active {
+    opacity: 1;
+    transition: opacity ${appearDuration}ms ease-out;
+  }
+`;
+
 export function Contact() {
-  const [name, setName] = useState<string>();
-  const [email, setEmail] = useState<string>();
-  const [message, setMessage] = useState<string>();
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
   const handleSubmit = async () => {
     const url = "/send-mail";
@@ -53,6 +73,24 @@ export function Contact() {
     console.log({ response });
   };
 
+  const [step, setStep] = useState<"name" | "email" | "message" | "success">(
+    "name"
+  );
+
+  const nextItem = () => {
+    if (step === "name") {
+      setStep("email");
+    } else if (step === "email") {
+      setStep("name");
+    } else if (step === "message") {
+      setStep("success");
+    }
+  };
+
+  const [displayed, setDisplayed] = useState<
+    "name" | "email" | "message" | "success"
+  >();
+
   return (
     <ContentContainer>
       <TextContent>
@@ -60,29 +98,53 @@ export function Contact() {
         <ExplanationText>Contact me!</ExplanationText>
 
         <form>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            onChange={(e) => setName(e.target.value)}
-          />
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="text"
-            name="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label htmlFor="message">Message</label>
+          {displayed === "name" && (
+            <CSSTransitionGroup
+              transitionName={transitionName}
+              transitionAppear={true}
+              transitionAppearTimeout={appearDuration}
+            >
+              <Container>
+                <label htmlFor="name">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Container>
+            </CSSTransitionGroup>
+          )}
+
+          {displayed === "email" && (
+            <>
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="text"
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </>
+          )}
+
+          {/* <label htmlFor="message">Message</label>
           <input
             id="message"
             type="text"
             name="message"
             onChange={(e) => setMessage(e.target.value)}
-          />
-          <button type="button" onClick={handleSubmit}>
-            Send
+          /> */}
+
+          <button type="button" onClick={nextItem}>
+            Next
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={step !== "message" || message.length === 0}
+          >
+            Submit Your Message
           </button>
         </form>
       </TextContent>

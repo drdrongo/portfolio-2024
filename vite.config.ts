@@ -7,6 +7,6 @@ dotenv.config(); // load env vars from .env
 export default defineConfig(() => {
   return {
     plugins: [react()],
-    base: "/portfolio-2024/",
+    // base: "/portfolio-2024/",
   };
 });

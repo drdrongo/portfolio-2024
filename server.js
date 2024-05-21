@@ -6,9 +6,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Constants
-const isProduction = process.env.VITE_NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
+
+console.log({ isProduction});
 
 // Cached production assets
 const templateHtml = isProduction
