@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import { styled } from "styled-components";
-import CSSTransitionGroup from "react-transition-group/CSSTransitionGroup";
+import {
+  SwitchTransition,
+  Transition,
+  TransitionStatus,
+  CSSTransition,
+} from "react-transition-group";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { useForm } from "react-hook-form";
 
 // TODO: Implement this: https://reactcommunity.org/react-transition-group/css-transition
 const CONTENT_WIDTH = 840;
@@ -32,30 +40,113 @@ const ExplanationText = styled.p`
   margin-bottom: 24px;
 `;
 
-const appearDuration = 500;
+const NextStepButton = styled.button`
+  background-color: white;
+  color: ${(props) => props.theme.colors.black};
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  align-items: stretch;
+`;
+
+const transitionDuration = 300;
 const transitionName = `example`;
+
+const MyForm = styled.form`
+  height: 200px;
+  width: 100%;
+  border: 1px solid red;
+  display: flex;
+  flex-direction: column;
+`;
 
 const Container = styled.section`
   font-size: 1.5em;
   padding: 0;
   margin: 0;
+  display: flex;
+  align-items: center;
+  background-color: grey;
+  padding: 2px 8px;
+  gap: 8px;
 
-  &.${transitionName}-appear {
-    opacity: 0.01;
+  &.${transitionName}-enter {
+    opacity: 0;
   }
-
-  &.${transitionName}-appear-active {
+  &.${transitionName}-enter-active {
     opacity: 1;
-    transition: opacity ${appearDuration}ms ease-out;
+    transition: opacity ${transitionDuration}ms;
+  }
+  &.${transitionName}-enter-done {
+    opacity: 1;
+  }
+  &.${transitionName}-exit {
+    opacity: 1;
+  }
+  &.${transitionName}-exit-active {
+    opacity: 0;
+    transition: opacity ${transitionDuration}ms;
+  }
+  &.${transitionName}-exit-done {
+    opacity: 0;
   }
 `;
 
-export function Contact() {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+const InputIcon = styled.span`
+  font-size: 1.2rem;
+`;
 
-  const handleSubmit = async () => {
+const Input = styled.input`
+  all: unset;
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 4px 0;
+`;
+
+type Step = "transitioning" | "name" | "email" | "message" | "success";
+
+export function Contact() {
+  const [step, setStep] = useState<Step>("name");
+
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const messageRef = useRef(null);
+  const successRef = useRef(null);
+
+  const completed = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    trigger,
+  } = useForm<{
+    name: string;
+    email: string;
+    message: string;
+  }>({
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
+  });
+
+  const onSubmit = async ({
+    name,
+    email,
+    message,
+  }: {
+    name: string;
+    email: string;
+    message: string;
+  }) => {
     const url = "/send-mail";
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -73,23 +164,21 @@ export function Contact() {
     console.log({ response });
   };
 
-  const [step, setStep] = useState<"name" | "email" | "message" | "success">(
-    "name"
-  );
+  const message = watch("message");
 
-  const nextItem = () => {
-    if (step === "name") {
-      setStep("email");
-    } else if (step === "email") {
-      setStep("name");
-    } else if (step === "message") {
-      setStep("success");
-    }
-  };
+  const advanceStep = async () =>
+    // stepName: "name" | "email" | "message" | "success"
+    {
+      if (step === "transitioning") return;
 
-  const [displayed, setDisplayed] = useState<
-    "name" | "email" | "message" | "success"
-  >();
+      const isValid = step === "success" || (await trigger(step));
+      if (!isValid) {
+        console.log(`INVALID ${step}`);
+        // setStep(step);
+        return;
+      }
+      setStep("transitioning");
+    };
 
   return (
     <ContentContainer>
@@ -97,56 +186,101 @@ export function Contact() {
         <HeaderText>Contact</HeaderText>
         <ExplanationText>Contact me!</ExplanationText>
 
-        <form>
-          {displayed === "name" && (
-            <CSSTransitionGroup
-              transitionName={transitionName}
-              transitionAppear={true}
-              transitionAppearTimeout={appearDuration}
-            >
-              <Container>
-                <label htmlFor="name">Name</label>
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Container>
-            </CSSTransitionGroup>
-          )}
+        <FlexContainer>{step}</FlexContainer>
+        <MyForm>
+          <CSSTransition
+            in={step === "name"}
+            onExited={() => setStep("email")}
+            classNames={transitionName}
+            timeout={transitionDuration}
+            unmountOnExit
+            nodeRef={nameRef}
+          >
+            <Container ref={nameRef}>
+              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <Input
+                id="name"
+                type="text"
+                placeholder="name"
+                {...register("name", { required: "Name is required" })}
+              />
+              {errors.name && <p>{errors.name.message}</p>}
+            </Container>
+          </CSSTransition>
 
-          {displayed === "email" && (
-            <>
-              <label htmlFor="email">Email</label>
-              <input
+          <CSSTransition
+            in={step === "email"}
+            onExited={() => setStep("message")}
+            timeout={transitionDuration}
+            classNames={transitionName}
+            unmountOnExit
+            nodeRef={emailRef}
+          >
+            <Container ref={emailRef}>
+              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <Input
                 id="email"
                 type="text"
-                name="email"
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email address",
+                  },
+                })}
               />
-            </>
-          )}
+              {errors.email && <p>{errors.email.message}</p>}
+            </Container>
+          </CSSTransition>
 
-          {/* <label htmlFor="message">Message</label>
-          <input
-            id="message"
-            type="text"
-            name="message"
-            onChange={(e) => setMessage(e.target.value)}
-          /> */}
-
-          <button type="button" onClick={nextItem}>
-            Next
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={step !== "message" || message.length === 0}
+          <CSSTransition
+            in={step === "message"}
+            onExited={() => setStep("success")}
+            timeout={transitionDuration}
+            classNames={transitionName}
+            unmountOnExit
+            nodeRef={messageRef}
           >
-            Submit Your Message
-          </button>
-        </form>
+            <Container ref={messageRef}>
+              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <Input
+                id="message"
+                type="text"
+                placeholder="message"
+                {...register("message", { required: "Message is required" })}
+              />
+              {errors.message && <p>{errors.message.message}</p>}
+            </Container>
+          </CSSTransition>
+
+          <CSSTransition
+            in={step === "success"}
+            onExited={() => setStep("name")}
+            timeout={transitionDuration}
+            classNames={transitionName}
+            unmountOnExit
+            nodeRef={successRef}
+          >
+            <Container ref={successRef}>
+              <HeaderText>Thanks Chump!</HeaderText>
+            </Container>
+          </CSSTransition>
+
+          <FlexContainer>
+            <NextStepButton type="button" onClick={advanceStep}>
+              Next
+            </NextStepButton>
+
+            <button
+              type="button"
+              onClick={handleSubmit(onSubmit)}
+              disabled={step !== "message" || message.length === 0}
+            >
+              Submit Your Message
+            </button>
+          </FlexContainer>
+        </MyForm>
       </TextContent>
     </ContentContainer>
   );
