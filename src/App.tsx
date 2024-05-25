@@ -13,6 +13,7 @@ import { MySkills } from "./components/MySkills";
 import { Projects } from "./components/Projects";
 import { Navbar } from "./components/Navbar";
 import { Contact } from "./components/Contact";
+import { Button } from "./components/Button";
 
 const CONTENT_WIDTH = 840;
 
@@ -220,7 +221,7 @@ function App() {
                   <br />
                   He will make you a really great-looking website.
                 </p>
-                <CtaButton onClick={() => {}}>Get In Touch</CtaButton>
+                <Button onClick={() => {}}>Get In Touch</Button>
               </TextContent>
 
               <BlobContainer>
