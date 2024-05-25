@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { styled } from "styled-components";
 
+import rgba from "color-rgba";
+
 interface ButtonProps
   extends React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -16,7 +18,8 @@ const StyledButton = styled.button<{
   rgbValues?: string;
 }>`
   position: relative;
-
+  padding: 0.8em 1.6em;
+  font-weight: bold;
   color: ${(props) => props.backgroundColor ?? props.theme.colors.white};
 
   border: 1px solid rgb(${(props) => props.rgbValues});
@@ -51,7 +54,8 @@ export const Button = ({
   children,
   ...rest
 }: ButtonProps) => {
-  const rgbValues = mainColor.match(/\d+/g)?.join(", ") as string;
+  const [r, g, b] = rgba(mainColor) ?? [0, 120, 255];
+  const rgbValues = [r, g, b].join(", ");
 
   return (
     <StyledButton {...rest} rgbValues={rgbValues}>
