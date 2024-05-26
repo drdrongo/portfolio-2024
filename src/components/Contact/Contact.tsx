@@ -1,11 +1,5 @@
-import { ReactNode, useMemo, useRef, useState } from "react";
-import { css, styled } from "styled-components";
-import {
-  SwitchTransition,
-  Transition,
-  TransitionStatus,
-  CSSTransition,
-} from "react-transition-group";
+import { useRef, useState } from "react";
+import { CSSTransition } from "react-transition-group";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -14,143 +8,32 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { Button } from "../Button";
-
-// TODO: Implement this: https://reactcommunity.org/react-transition-group/css-transition
-const CONTENT_WIDTH = 840;
-const transitionDuration = 300;
-const transitionName = `example`;
-
-const transitionStyles = () => css`
-  &.${transitionName}-enter {
-    opacity: 0;
-  }
-  &.${transitionName}-enter-active {
-    opacity: 1;
-    transition: opacity ${transitionDuration}ms;
-  }
-  &.${transitionName}-enter-done {
-    opacity: 1;
-  }
-  &.${transitionName}-exit {
-    opacity: 1;
-  }
-  &.${transitionName}-exit-active {
-    opacity: 0;
-    transition: opacity ${transitionDuration}ms;
-  }
-  &.${transitionName}-exit-done {
-    opacity: 0;
-  }
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 0 30px;
-  width: ${CONTENT_WIDTH}px;
-  flex-grow: 1;
-  min-height: 400px;
-`;
-
-const TextContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-`;
-
-const HeaderText = styled.h1`
-  font-family: "poppins";
-`;
-
-const ExplanationText = styled.p`
-  text-align: start;
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  align-items: center;
-  height: 24px;
-`;
-
-const MyForm = styled.form`
-  height: 200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  ${transitionStyles}
-`;
-
-const InputContainer = styled.section`
-  font-size: 1.5em;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  margin-bottom: 24px;
-
-  background-color: #2b305f;
-  color: white;
-  border-radius: 8px;
-
-  border: 1px solid #2b305f;
-  &:focus-within {
-    border: 1px solid #3548f4;
-  }
-
-  ${transitionStyles}
-`;
-
-const Input = styled.input`
-  all: unset;
-  width: 100%;
-  font-size: 1.2rem;
-  padding: 4px 0;
-`;
-
-const ErrorMessage = styled.p`
-  font-size: 0.9rem;
-  color: #e83c3c;
-`;
-
-const StepsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  height: 40px;
-  width: 100%;
-  gap: 8px;
-`;
-
-const StepItem = styled.div`
-  height: 100%;
-  background-color: grey;
-  padding: 8px 16px;
-  max-width: 260px;
-  white-space: pre;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-
-  ${transitionStyles}
-
-  svg {
-    margin-right: 4px;
-  }
-`;
+import {
+  ContentContainer,
+  ErrorContainer,
+  ErrorMessage,
+  ExplanationText,
+  FlexContainer,
+  HeaderText,
+  Input,
+  InputContainer,
+  MyForm,
+  StepItem,
+  StepsContainer,
+  TRANSITION_DURATION,
+  TRANSITION_NAME,
+  TextContent,
+} from "./styles";
+import { TypeAnimation } from "react-type-animation";
+import Typewriter from "../Typewriter/Typewriter";
 
 type Step = "transitioning" | "name" | "email" | "message" | "success";
+
+const baseTransitionProps = {
+  timeout: TRANSITION_DURATION,
+  classNames: TRANSITION_NAME,
+  unmountOnExit: true,
+};
 
 export function Contact() {
   const [step, setStep] = useState<Step>("name");
@@ -160,12 +43,6 @@ export function Contact() {
   const messageRef = useRef(null);
   const successRef = useRef(null);
   const formRef = useRef(null);
-
-  const completed = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
 
   const {
     register,
@@ -209,22 +86,15 @@ export function Contact() {
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
     });
-    console.log({ response });
+    // console.log({ response });
   };
 
-  const advanceStep = async () =>
-    // stepName: "name" | "email" | "message" | "success"
-    {
-      if (step === "transitioning") return;
+  const advanceStep = async () => {
+    if (step === "transitioning") return;
 
-      const isValid = step === "success" || (await trigger(step));
-      if (!isValid) {
-        console.log(`INVALID ${step}`);
-        // setStep(step);
-        return;
-      }
-      setStep("transitioning");
-    };
+    const isValid = step === "success" || (await trigger(step));
+    if (isValid) setStep("transitioning");
+  };
 
   const name = watch("name");
   const email = watch("email");
@@ -235,6 +105,8 @@ export function Contact() {
   const stepRefMessage = useRef(null);
 
   const [complete, setComplete] = useState(false);
+
+  const [sequence, setSequence] = useState(["Your Name"]);
 
   return (
     <ContentContainer>
@@ -247,13 +119,12 @@ export function Contact() {
         </ExplanationText>
       </TextContent>
 
+      {/* SUCCESS MESSAGE */}
       <CSSTransition
         in={complete}
         onExited={() => setStep("name")}
-        timeout={transitionDuration}
-        classNames={transitionName}
-        unmountOnExit
         nodeRef={successRef}
+        {...baseTransitionProps}
       >
         <InputContainer ref={successRef}>
           <p>Thanks Chump!</p>
@@ -268,75 +139,63 @@ export function Contact() {
         </InputContainer>
       </CSSTransition>
 
+      {/* FORM */}
       <CSSTransition
         in={step !== "success"}
         onExited={() => setComplete(true)}
-        timeout={transitionDuration}
-        classNames={transitionName}
-        unmountOnExit
         nodeRef={formRef}
+        {...baseTransitionProps}
       >
         <MyForm ref={formRef}>
+          {/* STEPS CONTAINER */}
           <StepsContainer>
-            {/* Step Name */}
+            {/* STEP: Name */}
             <CSSTransition
-              in={step !== "name" && !!name}
-              onExited={() => setComplete(true)}
-              timeout={transitionDuration}
-              classNames={transitionName}
-              unmountOnExit
+              in={true}
               nodeRef={stepRefName}
+              {...baseTransitionProps}
             >
               <StepItem ref={stepRefName}>
-                <FontAwesomeIcon icon={faUser} /> {name}
+                <FontAwesomeIcon icon={faUser} />{" "}
+                <Typewriter text={step === "name" ? "Your Name" : name} />
               </StepItem>
             </CSSTransition>
 
-            {/* Step Email */}
+            {/* STEP: Email */}
             <CSSTransition
-              in={step !== "email" && !!email}
-              onExited={() => setComplete(true)}
-              timeout={transitionDuration}
-              classNames={transitionName}
-              unmountOnExit
+              in={step !== "name" && step !== "transitioning"}
               nodeRef={stepRefEmail}
+              {...baseTransitionProps}
             >
               <StepItem ref={stepRefEmail}>
-                <FontAwesomeIcon icon={faEnvelope} /> {email}
+                <FontAwesomeIcon icon={faEnvelope} />{" "}
+                <Typewriter text={step === "email" ? "Your Email" : email} />
               </StepItem>
             </CSSTransition>
 
-            {/* Step Message */}
+            {/* STEP: Message */}
             <CSSTransition
-              in={step !== "message" && !!message}
-              onExited={() => setComplete(true)}
-              timeout={transitionDuration}
-              classNames={transitionName}
-              unmountOnExit
+              in={
+                step !== "name" && step !== "email" && step !== "transitioning"
+              }
               nodeRef={stepRefMessage}
+              {...baseTransitionProps}
             >
               <StepItem ref={stepRefMessage}>
-                <FontAwesomeIcon icon={faPenNib} /> {message}
+                <FontAwesomeIcon icon={faPenNib} />{" "}
+                <Typewriter
+                  text={step === "message" ? "Your Message" : message}
+                />
               </StepItem>
             </CSSTransition>
           </StepsContainer>
 
-          <ErrorContainer>
-            {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
-            {errors.email && (
-              <ErrorMessage>{errors.email.message}</ErrorMessage>
-            )}
-            {errors.message && (
-              <ErrorMessage>{errors.message.message}</ErrorMessage>
-            )}
-          </ErrorContainer>
+          {/* INPUT: name */}
           <CSSTransition
             in={step === "name"}
             onExited={() => setStep("email")}
-            classNames={transitionName}
-            timeout={transitionDuration}
-            unmountOnExit
             nodeRef={nameRef}
+            {...baseTransitionProps}
           >
             <InputContainer ref={nameRef}>
               <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
@@ -349,16 +208,15 @@ export function Contact() {
             </InputContainer>
           </CSSTransition>
 
+          {/* INPUT: email */}
           <CSSTransition
             in={step === "email"}
             onExited={() => setStep("message")}
-            timeout={transitionDuration}
-            classNames={transitionName}
-            unmountOnExit
             nodeRef={emailRef}
+            {...baseTransitionProps}
           >
             <InputContainer ref={emailRef}>
-              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <FontAwesomeIcon fontSize="1.2rem" icon={faEnvelope} />
               <Input
                 id="email"
                 type="text"
@@ -374,27 +232,36 @@ export function Contact() {
             </InputContainer>
           </CSSTransition>
 
+          {/* INPUT: message */}
           <CSSTransition
             in={step === "message"}
             onExited={() => setStep("success")}
-            timeout={transitionDuration}
-            classNames={transitionName}
-            unmountOnExit
             nodeRef={messageRef}
+            {...baseTransitionProps}
           >
             <InputContainer ref={messageRef}>
-              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <FontAwesomeIcon fontSize="1.2rem" icon={faPenNib} />
               <Input
                 id="message"
                 type="text"
                 placeholder="message"
-                {...register("message", {
-                  required: "Message is required",
-                })}
+                {...register("message", { required: "Message is required" })}
               />
             </InputContainer>
           </CSSTransition>
 
+          {/* ERRORS */}
+          <ErrorContainer>
+            {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+            {errors.email && (
+              <ErrorMessage>{errors.email.message}</ErrorMessage>
+            )}
+            {errors.message && (
+              <ErrorMessage>{errors.message.message}</ErrorMessage>
+            )}
+          </ErrorContainer>
+
+          {/* BUTTONS: [ NEXT ] [ SUBMIT ] */}
           <FlexContainer>
             <Button type="button" onClick={advanceStep}>
               Next
