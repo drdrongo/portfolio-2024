@@ -24,7 +24,6 @@ import {
   TRANSITION_NAME,
   TextContent,
 } from "./styles";
-import { TypeAnimation } from "react-type-animation";
 import Typewriter from "../Typewriter/Typewriter";
 
 type Step = "transitioning" | "name" | "email" | "message" | "success";
@@ -86,7 +85,6 @@ export function Contact() {
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
     });
-    // console.log({ response });
   };
 
   const advanceStep = async () => {
@@ -105,8 +103,6 @@ export function Contact() {
   const stepRefMessage = useRef(null);
 
   const [complete, setComplete] = useState(false);
-
-  const [sequence, setSequence] = useState(["Your Name"]);
 
   return (
     <ContentContainer>
@@ -157,34 +153,39 @@ export function Contact() {
             >
               <StepItem ref={stepRefName}>
                 <FontAwesomeIcon icon={faUser} />{" "}
-                <Typewriter text={step === "name" ? "Your Name" : name} />
+                <Typewriter
+                  initText="Your Name"
+                  text={step === "name" ? "" : name}
+                />
               </StepItem>
             </CSSTransition>
 
             {/* STEP: Email */}
             <CSSTransition
-              in={step !== "name" && step !== "transitioning"}
+              in={true}
               nodeRef={stepRefEmail}
               {...baseTransitionProps}
             >
               <StepItem ref={stepRefEmail}>
                 <FontAwesomeIcon icon={faEnvelope} />{" "}
-                <Typewriter text={step === "email" ? "Your Email" : email} />
+                <Typewriter
+                  initText="Your Email"
+                  text={step === "email" ? "" : email}
+                />
               </StepItem>
             </CSSTransition>
 
             {/* STEP: Message */}
             <CSSTransition
-              in={
-                step !== "name" && step !== "email" && step !== "transitioning"
-              }
+              in={step !== "name" && step !== "email" && !!email}
               nodeRef={stepRefMessage}
               {...baseTransitionProps}
             >
               <StepItem ref={stepRefMessage}>
                 <FontAwesomeIcon icon={faPenNib} />{" "}
                 <Typewriter
-                  text={step === "message" ? "Your Message" : message}
+                  initText="Your Message"
+                  text={step === "message" ? "" : message}
                 />
               </StepItem>
             </CSSTransition>

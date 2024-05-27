@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 
 export const Typewriter = ({
+  initText,
   text,
   delay = 65,
 }: {
+  initText: string;
   text: string;
   delay?: number;
 }) => {
-  const [currentText, setCurrentText] = useState(text);
+  const [currentText, setCurrentText] = useState(initText);
 
-  const indexRef = useRef(text.length - 1);
+  const indexRef = useRef(initText.length - 1);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -30,7 +32,7 @@ export const Typewriter = ({
         if (indexRef.current >= 0) {
           unTypeText();
         } else {
-          setTimeout(typeText, 500);
+          setTimeout(typeText, 350);
         }
       });
     }
@@ -55,11 +57,15 @@ export const Typewriter = ({
   };
 
   useEffect(() => {
-    if (currentText === text) return;
+    if (text === "") {
+      return;
+    }
 
     unTypeText();
 
-    return () => clearTimeout(timeoutRef.current);
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
   }, [text]);
 
   return <span>{currentText}</span>;
