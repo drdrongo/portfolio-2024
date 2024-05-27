@@ -1,5 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 
+function longestStartingSubstring(str1: string, str2: string) {
+  let longestSubstring = "";
+
+  for (let i = 1; i <= str1.length; i++) {
+    let substring = str1.slice(0, i);
+    if (str2.startsWith(substring)) {
+      longestSubstring = substring;
+    } else {
+      break;
+    }
+  }
+
+  return longestSubstring;
+}
+
 export const Typewriter = ({
   initText,
   text,
@@ -16,7 +31,9 @@ export const Typewriter = ({
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const unTypeText = () => {
-    if (indexRef.current >= 0) {
+    const endIndex = longestStartingSubstring(currentText, text).length;
+
+    if (indexRef.current >= endIndex) {
       new Promise(
         (resolve) =>
           (timeoutRef.current = setTimeout(() => {
@@ -29,7 +46,7 @@ export const Typewriter = ({
             resolve(0);
           }, delay))
       ).then(() => {
-        if (indexRef.current >= 0) {
+        if (indexRef.current >= endIndex) {
           unTypeText();
         } else {
           setTimeout(typeText, 250);

@@ -175,7 +175,7 @@ export function Contact() {
                 <FontAwesomeIcon icon={faUser} />{" "}
                 <Typewriter
                   initText="Your Name"
-                  text={step === "name" ? "" : name}
+                  text={step === "name" ? "" : `${name}`}
                 />
               </StepItem>
             </CSSTransition>
@@ -190,7 +190,7 @@ export function Contact() {
                 <FontAwesomeIcon icon={faEnvelope} />{" "}
                 <Typewriter
                   initText="Your Email"
-                  text={step === "email" ? "" : email}
+                  text={step === "email" ? "" : `${email}`}
                 />
               </StepItem>
             </CSSTransition>
@@ -208,7 +208,7 @@ export function Contact() {
                 <FontAwesomeIcon icon={faPenNib} />{" "}
                 <Typewriter
                   initText="Your Message"
-                  text={step === "message" ? "" : message}
+                  text={step === "message" ? "" : `${message}`}
                 />
               </StepItem>
             </CSSTransition>
