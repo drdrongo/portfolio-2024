@@ -114,16 +114,15 @@ export const ErrorMessage = styled.p`
 export const StepsContainer = styled.div`
   display: flex;
   align-items: center;
-  height: 40px;
   width: 100%;
   gap: 8px;
   margin-bottom: 16px;
 `;
 
 export const StepItem = styled.div`
-  height: 100%;
+  /* height: 100%; */
   background-color: grey;
-  padding: 8px 16px;
+  padding: 4px 16px;
   max-width: 260px;
   white-space: pre;
   overflow: hidden;

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 export const Typewriter = ({
   initText,
   text,
-  delay = 65,
+  delay = 40,
 }: {
   initText: string;
   text: string;
@@ -32,7 +32,7 @@ export const Typewriter = ({
         if (indexRef.current >= 0) {
           unTypeText();
         } else {
-          setTimeout(typeText, 350);
+          setTimeout(typeText, 250);
         }
       });
     }

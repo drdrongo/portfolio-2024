@@ -44,12 +44,12 @@ export function Contact() {
   const formRef = useRef(null);
 
   const {
+    formState: { errors },
+    handleSubmit,
     register,
     reset,
-    handleSubmit,
-    formState: { errors },
-    watch,
     trigger,
+    watch,
   } = useForm<{
     name: string;
     email: string;
@@ -87,13 +87,6 @@ export function Contact() {
     });
   };
 
-  const advanceStep = async () => {
-    if (step === "transitioning") return;
-
-    const isValid = step === "success" || (await trigger(step));
-    if (isValid) setStep("transitioning");
-  };
-
   const name = watch("name");
   const email = watch("email");
   const message = watch("message");
@@ -103,6 +96,35 @@ export function Contact() {
   const stepRefMessage = useRef(null);
 
   const [complete, setComplete] = useState(false);
+
+  // name | email | message
+  const [completedStep, setCompletedStep] = useState<Step[]>([]);
+
+  const nextStepRef = useRef<Step>("email");
+
+  const nextSequenceStep = (
+    {
+      name: "email",
+      email: "message",
+      message: "success",
+      transitioning: "transitioning",
+      success: "name",
+    } satisfies Record<string, Step>
+  )[step];
+
+  const changeStep = async (nextStep: Step) => {
+    if (step === nextStep || step === "transitioning" || step === "success")
+      return;
+
+    const isValid = await trigger(step);
+    if (!isValid) return;
+
+    setCompletedStep((prev) => Array.from(new Set([...prev, step])));
+    nextStepRef.current = nextStep;
+    setStep("transitioning");
+  };
+
+  const handleInputExited = () => setStep(nextStepRef.current);
 
   return (
     <ContentContainer>
@@ -118,7 +140,6 @@ export function Contact() {
       {/* SUCCESS MESSAGE */}
       <CSSTransition
         in={complete}
-        onExited={() => setStep("name")}
         nodeRef={successRef}
         {...baseTransitionProps}
       >
@@ -138,7 +159,6 @@ export function Contact() {
       {/* FORM */}
       <CSSTransition
         in={step !== "success"}
-        onExited={() => setComplete(true)}
         nodeRef={formRef}
         {...baseTransitionProps}
       >
@@ -151,7 +171,7 @@ export function Contact() {
               nodeRef={stepRefName}
               {...baseTransitionProps}
             >
-              <StepItem ref={stepRefName}>
+              <StepItem ref={stepRefName} onClick={() => changeStep("name")}>
                 <FontAwesomeIcon icon={faUser} />{" "}
                 <Typewriter
                   initText="Your Name"
@@ -162,11 +182,11 @@ export function Contact() {
 
             {/* STEP: Email */}
             <CSSTransition
-              in={true}
+              in={completedStep.includes("name")}
               nodeRef={stepRefEmail}
               {...baseTransitionProps}
             >
-              <StepItem ref={stepRefEmail}>
+              <StepItem ref={stepRefEmail} onClick={() => changeStep("email")}>
                 <FontAwesomeIcon icon={faEnvelope} />{" "}
                 <Typewriter
                   initText="Your Email"
@@ -177,11 +197,14 @@ export function Contact() {
 
             {/* STEP: Message */}
             <CSSTransition
-              in={step !== "name" && step !== "email" && !!email}
+              in={completedStep.includes("email")}
               nodeRef={stepRefMessage}
               {...baseTransitionProps}
             >
-              <StepItem ref={stepRefMessage}>
+              <StepItem
+                ref={stepRefMessage}
+                onClick={() => changeStep("message")}
+              >
                 <FontAwesomeIcon icon={faPenNib} />{" "}
                 <Typewriter
                   initText="Your Message"
@@ -194,7 +217,7 @@ export function Contact() {
           {/* INPUT: name */}
           <CSSTransition
             in={step === "name"}
-            onExited={() => setStep("email")}
+            onExited={handleInputExited}
             nodeRef={nameRef}
             {...baseTransitionProps}
           >
@@ -212,7 +235,7 @@ export function Contact() {
           {/* INPUT: email */}
           <CSSTransition
             in={step === "email"}
-            onExited={() => setStep("message")}
+            onExited={handleInputExited}
             nodeRef={emailRef}
             {...baseTransitionProps}
           >
@@ -236,7 +259,7 @@ export function Contact() {
           {/* INPUT: message */}
           <CSSTransition
             in={step === "message"}
-            onExited={() => setStep("success")}
+            onExited={handleInputExited}
             nodeRef={messageRef}
             {...baseTransitionProps}
           >
@@ -264,7 +287,7 @@ export function Contact() {
 
           {/* BUTTONS: [ NEXT ] [ SUBMIT ] */}
           <FlexContainer>
-            <Button type="button" onClick={advanceStep}>
+            <Button type="button" onClick={() => changeStep(nextSequenceStep)}>
               Next
             </Button>
 
