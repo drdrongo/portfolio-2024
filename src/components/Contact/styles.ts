@@ -69,7 +69,7 @@ export const ErrorContainer = styled.div`
 `;
 
 export const MyForm = styled.form`
-  height: 200px;
+  /* height: 200px; */
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -85,6 +85,7 @@ export const InputContainer = styled.section`
   align-items: center;
   padding: 8px 16px;
   gap: 16px;
+  overflow: hidden;
   /* margin-bottom: 24px; */
 
   background-color: #2b305f;
@@ -104,6 +105,29 @@ export const Input = styled.input`
   width: 100%;
   font-size: 1.2rem;
   padding: 4px 0;
+`;
+
+const textAreaLineHeight = 1.375;
+const textAreaVerticalPadding = 4;
+export const TextArea = styled.textarea`
+  font-size: 1.2rem;
+  line-height: ${textAreaLineHeight};
+  padding: ${textAreaVerticalPadding}px 0;
+  max-height: calc(
+    7em * ${textAreaLineHeight} + ${textAreaVerticalPadding * 2}px
+  );
+
+  min-height: initial !important;
+  width: 100%;
+  resize: none;
+  appearance: none;
+  overflow: auto;
+  font-weight: 400;
+
+  background-color: transparent;
+  outline: transparent solid 2px;
+  outline-offset: 2px;
+  border: none;
 `;
 
 export const ErrorMessage = styled.p`
@@ -128,8 +152,21 @@ export const StepItem = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
+  cursor: pointer;
 
   ${transitionStyles}
+
+  border: 1px solid grey;
+
+  background-color: grey;
+  box-shadow: none;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0);
+    box-shadow: 0px 0px 5px 5px grey;
+    transition: box-shadow 0.3s, background-color 0.3s;
+    border: 1px solid grey;
+  }
 
   svg {
     margin-right: 4px;

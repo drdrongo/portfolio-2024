@@ -22,9 +22,11 @@ import {
   StepsContainer,
   TRANSITION_DURATION,
   TRANSITION_NAME,
+  TextArea,
   TextContent,
 } from "./styles";
 import Typewriter from "../Typewriter/Typewriter";
+import useAutoSizeTextArea from "../../hooks/useAutoSizeTextArea";
 
 type Step = "transitioning" | "name" | "email" | "message" | "success";
 
@@ -126,6 +128,18 @@ export function Contact() {
 
   const handleInputExited = () => setStep(nextStepRef.current);
 
+  // Textarea: Resizing correctly
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  useAutoSizeTextArea("message", textAreaRef.current, message);
+
+  const { ref: textAreaRefFromLibrary, ...restMessage } = register("message", {
+    required: "Message is required",
+  });
+
+  /*
+  TODOS: When you click enter, it should go to next.
+  Change message to textarea
+  */
   return (
     <ContentContainer>
       <TextContent>
@@ -265,11 +279,17 @@ export function Contact() {
           >
             <InputContainer ref={messageRef}>
               <FontAwesomeIcon fontSize="1.2rem" icon={faPenNib} />
-              <Input
+              <TextArea
                 id="message"
-                type="text"
+                // type="text"
+                // rows={1}
                 placeholder="message"
-                {...register("message", { required: "Message is required" })}
+                {...restMessage}
+                // {...register("message", { required: "Message is required" })}
+                ref={(e) => {
+                  textAreaRefFromLibrary(e);
+                  textAreaRef.current = e; // you can still assign to ref
+                }}
               />
             </InputContainer>
           </CSSTransition>
