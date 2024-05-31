@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { styled } from "styled-components";
+
+const Text = styled.span`
+  white-space: nowrap;
+`;
 
 function longestStartingSubstring(str1: string, str2: string) {
   let longestSubstring = "";
@@ -14,6 +19,8 @@ function longestStartingSubstring(str1: string, str2: string) {
 
   return longestSubstring;
 }
+
+const MAX_LENGTH = 30;
 
 export const Typewriter = ({
   initText,
@@ -66,7 +73,7 @@ export const Typewriter = ({
             resolve(0);
           }, delay))
       ).then(() => {
-        if (indexRef.current < text.length) {
+        if (indexRef.current < MAX_LENGTH && indexRef.current < text.length) {
           typeText();
         }
       });
@@ -85,7 +92,7 @@ export const Typewriter = ({
     };
   }, [text]);
 
-  return <span>{currentText}</span>;
+  return <Text>{currentText}</Text>;
 };
 
 export default Typewriter;
