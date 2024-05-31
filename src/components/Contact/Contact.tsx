@@ -50,6 +50,7 @@ export function Contact() {
     handleSubmit,
     register,
     reset,
+    setFocus,
     trigger,
     watch,
   } = useForm<{
@@ -114,12 +115,14 @@ export function Contact() {
     } satisfies Record<string, Step>
   )[step];
 
-  const changeStep = async (nextStep: Step) => {
+  const changeStep = async (nextStep: Step = nextSequenceStep) => {
     if (step === nextStep || step === "transitioning" || step === "success")
       return;
 
     const isValid = await trigger(step);
-    if (!isValid) return;
+    if (!isValid) {
+      return;
+    }
 
     setCompletedStep((prev) => Array.from(new Set([...prev, step])));
     nextStepRef.current = nextStep;
@@ -176,7 +179,7 @@ export function Contact() {
         nodeRef={formRef}
         {...baseTransitionProps}
       >
-        <MyForm ref={formRef}>
+        <MyForm ref={formRef} onSubmit={(e) => e.preventDefault()}>
           {/* STEPS CONTAINER */}
           <StepsContainer>
             {/* STEP: Name */}
@@ -232,6 +235,7 @@ export function Contact() {
           <CSSTransition
             in={step === "name"}
             onExited={handleInputExited}
+            onEnter={() => setFocus("name")}
             nodeRef={nameRef}
             {...baseTransitionProps}
           >
@@ -241,6 +245,7 @@ export function Contact() {
                 id="name"
                 type="text"
                 placeholder="name"
+                onKeyDown={(e) => e.key === "Enter" && changeStep()}
                 {...register("name", { required: "Name is required" })}
               />
             </InputContainer>
@@ -250,6 +255,7 @@ export function Contact() {
           <CSSTransition
             in={step === "email"}
             onExited={handleInputExited}
+            onEnter={() => setFocus("email")}
             nodeRef={emailRef}
             {...baseTransitionProps}
           >
@@ -259,6 +265,7 @@ export function Contact() {
                 id="email"
                 type="text"
                 placeholder="email"
+                onKeyDown={(e) => e.key === "Enter" && changeStep()}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -274,6 +281,7 @@ export function Contact() {
           <CSSTransition
             in={step === "message"}
             onExited={handleInputExited}
+            onEnter={() => setFocus("message")}
             nodeRef={messageRef}
             {...baseTransitionProps}
           >
@@ -307,14 +315,27 @@ export function Contact() {
 
           {/* BUTTONS: [ NEXT ] [ SUBMIT ] */}
           <FlexContainer>
-            <Button type="button" onClick={() => changeStep(nextSequenceStep)}>
+            <Button
+              type="button"
+              onClick={() => changeStep()}
+              disabled={
+                (step === "name" && name === "") ||
+                (step === "email" &&
+                  !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+                    email
+                  )) ||
+                step === "message"
+              }
+            >
               Next
             </Button>
 
             <Button
               mainColor="rgb(0, 103, 97)"
               type="button"
-              onClick={handleSubmit(onSubmit)}
+              onClick={() => {
+                return handleSubmit(onSubmit);
+              }}
               disabled={step !== "message" || message.length === 0}
             >
               Submit Your Message

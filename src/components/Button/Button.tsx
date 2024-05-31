@@ -34,6 +34,14 @@ const StyledButton = styled.button<{
     transition: box-shadow 0.3s, background-color 0.3s;
     border: 1px solid rgb(${(props) => props.$rgbValues});
   }
+
+  &:disabled {
+    /* background-color: #acacac; */
+    pointer-events: none;
+    /* color: #888888; */
+    /* border: 1px solid #acacac; */
+    filter: saturate(30%);
+  }
 `;
 
 const InwardShadow = styled.div<{ $rgbValues: string }>`

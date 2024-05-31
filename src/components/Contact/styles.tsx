@@ -36,6 +36,7 @@ export const ContentContainer = styled.div`
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
   min-height: 400px;
+  margin-bottom: 80px;
 `;
 
 export const TextContent = styled.div`
@@ -145,7 +146,6 @@ export const StepsContainer = styled.div`
 
 export const StepItem = styled.div`
   /* height: 100%; */
-  background-color: grey;
   padding: 4px 16px;
   max-width: 260px;
   white-space: pre;
@@ -158,12 +158,13 @@ export const StepItem = styled.div`
 
   border: 1px solid grey;
 
-  background-color: grey;
+  background-color: transparent;
+  border-radius: 8px;
   box-shadow: none;
   transition: box-shadow 0.3s, background-color 0.3s;
   &:hover {
     background-color: rgba(0, 0, 0, 0);
-    box-shadow: 0px 0px 5px 5px grey;
+    box-shadow: 0px 0px 5px 5px #d9d9d94f;
     transition: box-shadow 0.3s, background-color 0.3s;
     border: 1px solid grey;
   }
