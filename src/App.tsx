@@ -82,11 +82,6 @@ const TextContent = styled.div`
   gap: 16px;
 `;
 
-const CtaButton = styled.button`
-  background-color: white;
-  color: ${(props) => props.theme.colors.black};
-`;
-
 const HeaderText = styled.h1`
   font-family: "poppins";
 `;
@@ -133,9 +128,9 @@ function App() {
     isCompletedRef: isCompletedRef3,
   } = useColorTransition(colorsLow, INITIAL_HOUR);
 
-  const [gradientColors, setGradientColors] = useState<string>(
-    `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
-  );
+  const [gradientColors, setGradientColors] = useState<
+    [string, string, string]
+  >([currentHex1.current, currentHex2.current, currentHex3.current]);
 
   const [currentHour, setCurrentHour] = useState<number>(INITIAL_HOUR);
 
@@ -166,14 +161,18 @@ function App() {
   ]);
 
   useEffect(() => {
-    setGradientColors(
-      `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
-    );
+    setGradientColors([
+      currentHex1.current,
+      currentHex2.current,
+      currentHex3.current,
+    ]);
 
     const colorChangeIntv = setInterval(() => {
-      setGradientColors(
-        `linear-gradient(${currentHex1.current}, ${currentHex2.current}, ${currentHex3.current})`
-      );
+      setGradientColors([
+        currentHex1.current,
+        currentHex2.current,
+        currentHex3.current,
+      ]);
     }, 20);
 
     startTransitions();

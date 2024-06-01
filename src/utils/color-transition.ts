@@ -42,7 +42,7 @@ export const useColorTransition = (
 
   const isCompletedRef = useRef(false);
   const increment = useRef<RGB>(hourlyColors[initialHour]);
-  const transHandler = useRef<number>();
+  const transHandler = useRef<NodeJS.Timeout>();
   const currentColor = useRef(hourlyColors[initialHour]);
   const targetColor = useRef<RGB>(
     hourlyColors[initialHour + 1 > hourlyColors.length - 1 ? 0 : initialHour]
@@ -83,6 +83,10 @@ export const useColorTransition = (
   function rgb2hex(colorArray: RGB): string {
     const color = [];
     for (let i = 0; i < colorArray.length; i++) {
+      if (colorArray[i] > 255) {
+        color.push("ff");
+        continue;
+      }
       let hex = colorArray[i].toString(16);
       if (hex.length < 2) {
         hex = "0" + hex;
