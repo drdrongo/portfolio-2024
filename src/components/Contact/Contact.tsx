@@ -14,6 +14,7 @@ import {
   ErrorMessage,
   ExplanationText,
   FlexContainer,
+  FontAwesomeIconStyled,
   HeaderText,
   Input,
   InputContainer,
@@ -139,10 +140,6 @@ export function Contact() {
     required: "Message is required",
   });
 
-  /*
-  TODOS: When you click enter, it should go to next.
-  Change message to textarea
-  */
   return (
     <ContentContainer>
       <TextContent>
@@ -240,7 +237,7 @@ export function Contact() {
             {...baseTransitionProps}
           >
             <InputContainer ref={nameRef}>
-              <FontAwesomeIcon fontSize="1.2rem" icon={faUser} />
+              <FontAwesomeIconStyled fontSize="1.2rem" icon={faUser} />
               <Input
                 id="name"
                 type="text"
@@ -260,7 +257,7 @@ export function Contact() {
             {...baseTransitionProps}
           >
             <InputContainer ref={emailRef}>
-              <FontAwesomeIcon fontSize="1.2rem" icon={faEnvelope} />
+              <FontAwesomeIconStyled fontSize="1.2rem" icon={faEnvelope} />
               <Input
                 id="email"
                 type="text"
@@ -286,14 +283,11 @@ export function Contact() {
             {...baseTransitionProps}
           >
             <InputContainer ref={messageRef}>
-              <FontAwesomeIcon fontSize="1.2rem" icon={faPenNib} />
+              <FontAwesomeIconStyled fontSize="1.2rem" icon={faPenNib} />
               <TextArea
                 id="message"
-                // type="text"
-                // rows={1}
                 placeholder="message"
                 {...restMessage}
-                // {...register("message", { required: "Message is required" })}
                 ref={(e) => {
                   textAreaRefFromLibrary(e);
                   textAreaRef.current = e; // you can still assign to ref

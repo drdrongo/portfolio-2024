@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { css, styled } from "styled-components";
 
 export const CONTENT_WIDTH = 840;
@@ -83,7 +84,7 @@ export const InputContainer = styled.section`
   padding: 0;
   margin: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 8px 16px;
   gap: 16px;
   overflow: hidden;
@@ -108,6 +109,10 @@ export const Input = styled.input`
   padding: 4px 0;
 `;
 
+export const FontAwesomeIconStyled = styled(FontAwesomeIcon)`
+  margin-top: 0.5em;
+`;
+
 const textAreaLineHeight = 1.375;
 const textAreaVerticalPadding = 4;
 export const TextArea = styled.textarea`
@@ -129,6 +134,7 @@ export const TextArea = styled.textarea`
   outline: transparent solid 2px;
   outline-offset: 2px;
   border: none;
+  color: white;
 `;
 
 export const ErrorMessage = styled.p`
