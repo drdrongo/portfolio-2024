@@ -29,7 +29,21 @@ import {
 import Typewriter from "../Typewriter/Typewriter";
 import useAutoSizeTextArea from "../../hooks/useAutoSizeTextArea";
 
-type Step = "transitioning" | "name" | "email" | "message" | "success";
+async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ ok: success });
+    }, 1000);
+  });
+}
+
+type Step =
+  | "transitioning"
+  | "name"
+  | "email"
+  | "message"
+  | "success"
+  | "sending";
 
 const baseTransitionProps = {
   timeout: TRANSITION_DURATION,
@@ -60,11 +74,37 @@ export function Contact() {
     message: string;
   }>({
     defaultValues: {
-      name: "",
-      email: "",
-      message: "",
+      name: "hayato clarke",
+      email: "hayatoclarke@gmail.com",
+      message: "Foobar",
     },
   });
+
+  // const onSubmit = async ({
+  //   name,
+  //   email,
+  //   message,
+  // }: {
+  //   name: string;
+  //   email: string;
+  //   message: string;
+  // }) => {
+  //   const url = "/send-mail";
+  //   const response = await fetch(url, {
+  //     method: "POST", // *GET, POST, PUT, DELETE, etc.
+  //     mode: "same-origin", // no-cors, *cors, same-origin
+  //     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+  //     credentials: "same-origin", // include, *same-origin, omit
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       // 'Content-Type': 'application/x-www-form-urlencoded',
+  //     },
+  //     redirect: "follow", // manual, *follow, error
+  //     referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  //     body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
+  //   });
+  //   console.log({ response });
+  // };
 
   const onSubmit = async ({
     name,
@@ -75,25 +115,29 @@ export function Contact() {
     email: string;
     message: string;
   }) => {
-    const url = "/send-mail";
-    const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "same-origin", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
-    });
+    console.log({ name, email, message });
+    // Start the transition to the loader...
+    // Maybe use Promise.all with a timeout to ensure you get around 2-3 seconds of sending time?
+    const responses = await Promise.all([
+      mockFetchRequest(false),
+      mockFetchRequest(true),
+    ]);
+    console.log({ responses });
+    // const response = await mockFetchRequest(true);
+    // if (response.ok) {
+    // } else {
+    // }
   };
 
   const name = watch("name");
   const email = watch("email");
   const message = watch("message");
+
+  const isValidName = name.length > 0;
+  const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+    email
+  );
+  const isValidMessage = message.length > 0;
 
   const stepRefName = useRef(null);
   const stepRefEmail = useRef(null);
@@ -102,7 +146,11 @@ export function Contact() {
   const [complete, setComplete] = useState(false);
 
   // name | email | message
-  const [completedStep, setCompletedStep] = useState<Step[]>([]);
+  const [completedStep, setCompletedStep] = useState<Step[]>([
+    "name",
+    "email",
+    "message",
+  ]);
 
   const nextStepRef = useRef<Step>("email");
 
@@ -113,11 +161,17 @@ export function Contact() {
       message: "success",
       transitioning: "transitioning",
       success: "name",
+      sending: "sending",
     } satisfies Record<string, Step>
   )[step];
 
   const changeStep = async (nextStep: Step = nextSequenceStep) => {
-    if (step === nextStep || step === "transitioning" || step === "success")
+    if (
+      step === nextStep ||
+      step === "transitioning" ||
+      step === "success" ||
+      step === "sending"
+    )
       return;
 
     const isValid = await trigger(step);
@@ -313,11 +367,8 @@ export function Contact() {
               type="button"
               onClick={() => changeStep()}
               disabled={
-                (step === "name" && name === "") ||
-                (step === "email" &&
-                  !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
-                    email
-                  )) ||
+                (step === "name" && !isValidName) ||
+                (step === "email" && !isValidEmail) ||
                 step === "message"
               }
             >
@@ -327,10 +378,8 @@ export function Contact() {
             <Button
               mainColor="rgb(0, 103, 97)"
               type="button"
-              onClick={() => {
-                return handleSubmit(onSubmit);
-              }}
-              disabled={step !== "message" || message.length === 0}
+              onClick={handleSubmit(onSubmit)}
+              disabled={!isValidName || !isValidEmail || !isValidMessage}
             >
               Submit Your Message
             </Button>

@@ -1,4 +1,4 @@
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 const useAutoSizeTextArea = (
   id: string,
@@ -6,7 +6,7 @@ const useAutoSizeTextArea = (
   value: string
 ) => {
   // this will calculate the height of textArea before DOM paints
-  useLayoutEffect(() => {
+  useEffect(() => {
     const textArea = textAreaRef ?? document.getElementById(id);
 
     if (textArea) {
