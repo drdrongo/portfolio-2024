@@ -37,6 +37,14 @@ async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
   });
 }
 
+async function waitAsync() {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 2000);
+  });
+}
+
 type Step =
   | "transitioning"
   | "name"
@@ -116,17 +124,12 @@ export function Contact() {
     message: string;
   }) => {
     console.log({ name, email, message });
-    // Start the transition to the loader...
-    // Maybe use Promise.all with a timeout to ensure you get around 2-3 seconds of sending time?
-    const responses = await Promise.all([
-      mockFetchRequest(false),
-      mockFetchRequest(true),
-    ]);
-    console.log({ responses });
-    // const response = await mockFetchRequest(true);
-    // if (response.ok) {
-    // } else {
-    // }
+    setStep("success");
+    const [response] = await Promise.all([mockFetchRequest(true), waitAsync()]);
+    if (response.ok) {
+    } else {
+      console.log("not okay");
+    }
   };
 
   const name = watch("name");
@@ -151,6 +154,10 @@ export function Contact() {
     "email",
     "message",
   ]);
+
+  const handleFormExited = () => {
+    setComplete(true);
+  };
 
   const nextStepRef = useRef<Step>("email");
 
@@ -196,15 +203,6 @@ export function Contact() {
 
   return (
     <ContentContainer>
-      <TextContent>
-        <HeaderText>Contact</HeaderText>
-        <ExplanationText>
-          If you'd like to reach out for a project collaboration or just to say
-          hello, please fill out the form below or send an email to
-          hayatoclarke@gmail.com. Let's get in touch!
-        </ExplanationText>
-      </TextContent>
-
       {/* SUCCESS MESSAGE */}
       <CSSTransition
         in={complete}
@@ -226,11 +224,21 @@ export function Contact() {
 
       {/* FORM */}
       <CSSTransition
-        in={step !== "success"}
+        in={!complete && step !== "success"}
+        onExited={handleFormExited}
         nodeRef={formRef}
         {...baseTransitionProps}
       >
         <MyForm ref={formRef} onSubmit={(e) => e.preventDefault()}>
+          <TextContent>
+            <HeaderText>Contact</HeaderText>
+            <ExplanationText>
+              If you'd like to reach out for a project collaboration or just to
+              say hello, please fill out the form below or send an email to
+              hayatoclarke@gmail.com. Let's get in touch!
+            </ExplanationText>
+          </TextContent>
+
           {/* STEPS CONTAINER */}
           <StepsContainer>
             {/* STEP: Name */}
