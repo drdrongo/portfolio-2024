@@ -18,9 +18,11 @@ import {
   HeaderText,
   Input,
   InputContainer,
+  LoadingContainer,
   MyForm,
   StepItem,
   StepsContainer,
+  SuccessContent,
   TRANSITION_DURATION,
   TRANSITION_NAME,
   TextArea,
@@ -28,6 +30,7 @@ import {
 } from "./styles";
 import Typewriter from "../Typewriter/Typewriter";
 import useAutoSizeTextArea from "../../hooks/useAutoSizeTextArea";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
   return new Promise((resolve) => {
@@ -41,7 +44,7 @@ async function waitAsync() {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
-    }, 2000);
+    }, 2500);
   });
 }
 
@@ -61,12 +64,18 @@ const baseTransitionProps = {
 
 export function Contact() {
   const [step, setStep] = useState<Step>("name");
+  const [complete, setComplete] = useState(false);
 
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const messageRef = useRef(null);
   const successRef = useRef(null);
   const formRef = useRef(null);
+
+  const stepRefName = useRef(null);
+  const stepRefEmail = useRef(null);
+  const stepRefMessage = useRef(null);
+  const sendingRef = useRef(null);
 
   const {
     formState: { errors },
@@ -81,6 +90,11 @@ export function Contact() {
     email: string;
     message: string;
   }>({
+    // defaultValues: {
+    //   name: "",
+    //   email: "",
+    //   message: "",
+    // },
     defaultValues: {
       name: "hayato clarke",
       email: "hayatoclarke@gmail.com",
@@ -114,19 +128,20 @@ export function Contact() {
   //   console.log({ response });
   // };
 
-  const onSubmit = async ({
-    name,
-    email,
-    message,
-  }: {
+  const onSubmit = async ({}: // name,
+  // email,
+  // message,
+  {
     name: string;
     email: string;
     message: string;
   }) => {
-    console.log({ name, email, message });
-    setStep("success");
+    setComplete(true);
+    changeStep("sending");
     const [response] = await Promise.all([mockFetchRequest(true), waitAsync()]);
     if (response.ok) {
+      changeStep("success");
+      reset();
     } else {
       console.log("not okay");
     }
@@ -142,22 +157,12 @@ export function Contact() {
   );
   const isValidMessage = message.length > 0;
 
-  const stepRefName = useRef(null);
-  const stepRefEmail = useRef(null);
-  const stepRefMessage = useRef(null);
-
-  const [complete, setComplete] = useState(false);
-
   // name | email | message
   const [completedStep, setCompletedStep] = useState<Step[]>([
     "name",
     "email",
     "message",
   ]);
-
-  const handleFormExited = () => {
-    setComplete(true);
-  };
 
   const nextStepRef = useRef<Step>("email");
 
@@ -174,19 +179,17 @@ export function Contact() {
 
   const changeStep = async (nextStep: Step = nextSequenceStep) => {
     if (
-      step === nextStep ||
-      step === "transitioning" ||
-      step === "success" ||
-      step === "sending"
-    )
-      return;
+      step !== nextStep &&
+      step !== "transitioning" &&
+      step !== "sending" &&
+      step !== "success"
+    ) {
+      const isValid = await trigger(step);
+      if (!isValid) return;
 
-    const isValid = await trigger(step);
-    if (!isValid) {
-      return;
+      setCompletedStep((prev) => Array.from(new Set([...prev, step])));
     }
 
-    setCompletedStep((prev) => Array.from(new Set([...prev, step])));
     nextStepRef.current = nextStep;
     setStep("transitioning");
   };
@@ -203,29 +206,40 @@ export function Contact() {
 
   return (
     <ContentContainer>
+      {/* LOADING */}
+      <CSSTransition
+        in={step === "sending"}
+        nodeRef={sendingRef}
+        onExited={() => setStep(nextStepRef.current)}
+        {...baseTransitionProps}
+      >
+        <LoadingContainer ref={sendingRef}>
+          <LoadingSpinner />
+        </LoadingContainer>
+      </CSSTransition>
+
       {/* SUCCESS MESSAGE */}
       <CSSTransition
-        in={complete}
+        in={step === "success"}
         nodeRef={successRef}
         {...baseTransitionProps}
       >
-        <InputContainer ref={successRef}>
-          <p>Thanks Chump!</p>
-          <Button
-            onClick={() => {
-              reset();
-              setComplete(false);
-            }}
-          >
-            Send Another?
-          </Button>
-        </InputContainer>
+        <SuccessContent ref={successRef}>
+          <HeaderText>Thanks for Reaching Out!</HeaderText>
+          <ExplanationText>
+            I’m thrilled to hear from you and will get back to you ASAP.
+          </ExplanationText>
+          <ExplanationText>
+            Thanks for being awesome, and I’ll talk to you soon!
+          </ExplanationText>
+          <Button onClick={() => {}}>Return to Top</Button>
+        </SuccessContent>
       </CSSTransition>
 
       {/* FORM */}
       <CSSTransition
-        in={!complete && step !== "success"}
-        onExited={handleFormExited}
+        in={!complete}
+        onExited={() => setStep(nextStepRef.current)}
         nodeRef={formRef}
         {...baseTransitionProps}
       >

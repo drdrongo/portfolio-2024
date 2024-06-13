@@ -38,6 +38,18 @@ export const ContentContainer = styled.div`
   flex-grow: 1;
   min-height: 400px;
   margin-bottom: 80px;
+  position: relative;
+`;
+
+export const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+
+  ${transitionStyles}
 `;
 
 export const TextContent = styled.div`
@@ -47,6 +59,12 @@ export const TextContent = styled.div`
   gap: 16px;
   width: 100%;
   margin-bottom: 16px;
+`;
+
+export const SuccessContent = styled(TextContent)`
+  margin-top: auto;
+  margin-bottom: auto;
+  ${transitionStyles}
 `;
 
 export const HeaderText = styled.h1`
@@ -71,7 +89,6 @@ export const ErrorContainer = styled.div`
 `;
 
 export const MyForm = styled.form`
-  /* height: 200px; */
   width: 100%;
   display: flex;
   flex-direction: column;
