@@ -31,6 +31,7 @@ import {
 import Typewriter from "../Typewriter/Typewriter";
 import useAutoSizeTextArea from "../../hooks/useAutoSizeTextArea";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { VerticalSpacer } from "../VerticalSpacer/VerticalSpacer";
 
 async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
   return new Promise((resolve) => {
@@ -232,6 +233,7 @@ export function Contact() {
           <ExplanationText>
             Thanks for being awesome, and I’ll talk to you soon!
           </ExplanationText>
+          <VerticalSpacer height="2px" />
           <Button onClick={() => {}}>Return to Top</Button>
         </SuccessContent>
       </CSSTransition>
