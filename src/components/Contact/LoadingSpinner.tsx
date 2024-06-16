@@ -11,7 +11,6 @@ const SpinnerLoaderSvg = styled.div`
   position: relative;
   margin: 0 auto;
   width: 128px;
-  /* margin-top: 20%; */
   text-align: center;
 
   svg {
