@@ -15,6 +15,8 @@ import { Navbar } from "./components/Navbar";
 import { Contact } from "./components/Contact";
 import { Button } from "./components/Button";
 import { scrollTo } from "./utils/tools";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const CONTENT_WIDTH = 840;
 
@@ -26,6 +28,7 @@ const AppContainer = styled.div`
   align-items: center;
   width: 100vw;
   position: relative;
+  background-color: ${(props) => props.theme.colors.navy};
 `;
 
 const SectionContainer = styled.section<{
@@ -129,6 +132,10 @@ function App() {
     isCompletedRef: isCompletedRef3,
   } = useColorTransition(colorsLow, INITIAL_HOUR);
 
+  useEffect(() => {
+    AOS.init();
+  }, []);
+
   const [gradientColors, setGradientColors] = useState<
     [string, string, string]
   >([currentHex1.current, currentHex2.current, currentHex3.current]);
@@ -212,7 +219,7 @@ function App() {
 
           <AbsoluteContainer>
             <ContentContainer>
-              <TextContent>
+              <TextContent data-aos="fade-right" data-aos-duration="1000">
                 <HeaderText>Hayato Clarke</HeaderText>
                 <p>
                   Looking forward to having great-looking websites?
@@ -226,7 +233,11 @@ function App() {
                 </Button>
               </TextContent>
 
-              <BlobContainer>
+              <BlobContainer
+                data-aos="fade-left"
+                data-aos-duration="1000"
+                data-aos-offset="300"
+              >
                 <RotatedImage src={blob} alt="blob" />
                 <Image src={hayato} alt="hayato" />
               </BlobContainer>
@@ -236,19 +247,32 @@ function App() {
 
         {/* My Skills */}
         <ColorFade direction="down" />
-        <SectionContainer id="skills">
+        <SectionContainer
+          id="skills"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
           <MySkills />
         </SectionContainer>
 
         {/* My Projects */}
         <ColorFade direction="up" />
-        <SectionContainer $background="black" id="projects">
+        <SectionContainer
+          $background="black"
+          id="projects"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
           <Projects />
         </SectionContainer>
 
         {/* Contact */}
         <ColorFade direction="down" />
-        <SectionContainer id="contact">
+        <SectionContainer
+          id="contact"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
           <Contact />
         </SectionContainer>
       </AppContainer>

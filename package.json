@@ -20,6 +20,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/react-transition-group": "^4.4.10",
     "@types/styled-components": "^5.1.34",
+    "aos": "^2.3.4",
     "color-rgba": "^3.0.0",
     "compression": "^1.7.4",
     "dotenv": "^16.4.5",
@@ -34,6 +35,7 @@
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
+    "@types/aos": "^3.0.7",
     "@types/color-rgba": "^2.1.2",
     "@types/node": "^20.12.12",
     "@types/react": "^18.2.66",
