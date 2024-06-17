@@ -25,7 +25,7 @@ const SpinnerLoaderSvg = styled.div`
 
 // React component
 export const LoadingSpinner = () => (
-  <SpinnerLoaderSvg className="react-spinner-loader-svg">
+  <SpinnerLoaderSvg>
     <svg width="128" height="128" viewBox="-3 -4 39 39">
       <polygon
         fill="transparent"
@@ -34,5 +34,6 @@ export const LoadingSpinner = () => (
         points="16,0 32,32 0,32"
       />
     </svg>
+    Sending...
   </SpinnerLoaderSvg>
 );

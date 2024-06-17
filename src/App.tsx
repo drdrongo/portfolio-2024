@@ -14,6 +14,7 @@ import { Projects } from "./components/Projects";
 import { Navbar } from "./components/Navbar";
 import { Contact } from "./components/Contact";
 import { Button } from "./components/Button";
+import { scrollTo } from "./utils/tools";
 
 const CONTENT_WIDTH = 840;
 
@@ -220,7 +221,9 @@ function App() {
                   <br />
                   He will make you a really great-looking website.
                 </p>
-                <Button onClick={() => {}}>Get In Touch</Button>
+                <Button onClick={() => scrollTo("contact")}>
+                  Get In Touch
+                </Button>
               </TextContent>
 
               <BlobContainer>

@@ -234,7 +234,11 @@ export function Contact() {
             Thanks for being awesome, and I’ll talk to you soon!
           </ExplanationText>
           <VerticalSpacer height="2px" />
-          <Button onClick={() => {}}>Return to Top</Button>
+          <Button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            Return to Top
+          </Button>
         </SuccessContent>
       </CSSTransition>
 

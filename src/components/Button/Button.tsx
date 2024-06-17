@@ -10,6 +10,7 @@ interface ButtonProps
   > {
   mainColor?: string;
   children?: ReactNode;
+  href?: string;
 }
 
 const StyledButton = styled.button<{
@@ -21,7 +22,7 @@ const StyledButton = styled.button<{
   padding: 0.8em 1.6em;
   font-weight: bold;
   color: ${(props) => props.backgroundColor ?? props.theme.colors.white};
-
+  border-radius: 8px;
   border: 1px solid rgb(${(props) => props.$rgbValues});
 
   background-color: ${(props) =>
@@ -60,13 +61,18 @@ const InwardShadow = styled.div<{ $rgbValues: string }>`
 export const Button = ({
   mainColor = "rgb(0, 120, 255)",
   children,
+  href,
   ...rest
 }: ButtonProps) => {
   const [r, g, b] = rgba(mainColor) ?? [0, 120, 255];
   const rgbValues = [r, g, b].join(", ");
 
   return (
-    <StyledButton {...rest} $rgbValues={rgbValues}>
+    <StyledButton
+      {...rest}
+      $rgbValues={rgbValues}
+      {...(href && { href, as: "a" })}
+    >
       <InwardShadow $rgbValues={rgbValues} />
       {children}
     </StyledButton>

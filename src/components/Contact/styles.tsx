@@ -37,7 +37,7 @@ export const ContentContainer = styled.div`
   width: ${CONTENT_WIDTH}px;
   flex-grow: 1;
   min-height: 400px;
-  margin-bottom: 80px;
+  margin-bottom: 160px;
   position: relative;
 `;
 

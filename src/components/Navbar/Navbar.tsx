@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { scrollTo } from "../../utils/tools";
 
 const CONTENT_WIDTH = 840;
 
@@ -27,36 +28,55 @@ const NavbarInner = styled.nav<{ $isVisible: boolean }>`
   top: ${(props) => (props.$isVisible ? 0 : -100)}%;
 `;
 
-const Header = styled.a`
+const Header = styled.button`
   color: white;
   margin-right: auto;
   font-size: 1.8rem;
   font-weight: bold;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+
+  &:hover {
+    border: none;
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
-const NavLink = styled.a`
+const NavLink = styled.button`
+  background-color: transparent;
   color: white;
   font-size: 1.4rem;
   padding: 8px;
   position: relative;
   margin: 0;
   padding: 0;
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
   &:hover {
     color: white;
+    background-color: transparent;
+    border: none;
   }
 
   &:before {
     content: attr(data-text);
     position: absolute;
-    top: 0;
+    top: 0%;
     left: 0;
-    color: rgba(255, 0, 0, 0.3);
-    width: 0%;
+    color: gold;
+    height: 0%;
     overflow: hidden;
-    transition: 0.5s;
+    transition: 0.7s;
   }
   &:hover:before {
-    width: 100%;
+    height: 100%;
   }
 `;
 
@@ -64,17 +84,14 @@ export const Navbar = ({ isNavbarVisible }: { isNavbarVisible: boolean }) => {
   return (
     <NavbarOuter>
       <NavbarInner $isVisible={isNavbarVisible}>
-        <Header href="#page-top">Hayato Clarke</Header>
-        <NavLink href="#top" data-text="Top">
-          Top
-        </NavLink>
-        <NavLink href="#skills" data-text="Skills">
+        <Header onClick={() => scrollTo("top")}>Hayato Clarke</Header>
+        <NavLink data-text="Skills" onClick={() => scrollTo("skills")}>
           Skills
         </NavLink>
-        <NavLink href="#projects" data-text="Projects">
+        <NavLink data-text="Projects" onClick={() => scrollTo("projects")}>
           Projects
         </NavLink>
-        <NavLink href="#contact" data-text="Contact">
+        <NavLink data-text="Contact" onClick={() => scrollTo("contact")}>
           Contact
         </NavLink>
       </NavbarInner>
