@@ -33,13 +33,13 @@ import useAutoSizeTextArea from "../../hooks/useAutoSizeTextArea";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { VerticalSpacer } from "../VerticalSpacer/VerticalSpacer";
 
-async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ ok: success });
-    }, 1000);
-  });
-}
+// async function mockFetchRequest(success: boolean): Promise<{ ok: boolean }> {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve({ ok: success });
+//     }, 1000);
+//   });
+// }
 
 async function waitAsync() {
   return new Promise<void>((resolve) => {
@@ -91,55 +91,35 @@ export function Contact() {
     email: string;
     message: string;
   }>({
-    // defaultValues: {
-    //   name: "",
-    //   email: "",
-    //   message: "",
-    // },
     defaultValues: {
-      name: "hayato clarke",
-      email: "hayatoclarke@gmail.com",
-      message: "Foobar",
+      name: "",
+      email: "",
+      message: "",
     },
   });
 
-  // const onSubmit = async ({
-  //   name,
-  //   email,
-  //   message,
-  // }: {
-  //   name: string;
-  //   email: string;
-  //   message: string;
-  // }) => {
-  //   const url = "/send-mail";
-  //   const response = await fetch(url, {
-  //     method: "POST", // *GET, POST, PUT, DELETE, etc.
-  //     mode: "same-origin", // no-cors, *cors, same-origin
-  //     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-  //     credentials: "same-origin", // include, *same-origin, omit
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       // 'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     redirect: "follow", // manual, *follow, error
-  //     referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  //     body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
-  //   });
-  //   console.log({ response });
-  // };
+  const name = watch("name");
+  const email = watch("email");
+  const message = watch("message");
 
-  const onSubmit = async ({}: // name,
-  // email,
-  // message,
-  {
-    name: string;
-    email: string;
-    message: string;
-  }) => {
+  const sendEmail = () =>
+    fetch("/send-mail", {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "same-origin", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify({ name, email, message }), // body data type must match "Content-Type" header
+    });
+
+  const onSubmit = async () => {
     setComplete(true);
     changeStep("sending");
-    const [response] = await Promise.all([mockFetchRequest(true), waitAsync()]);
+    const [response] = await Promise.all([sendEmail(), waitAsync()]);
     if (response.ok) {
       changeStep("success");
       reset();
@@ -147,10 +127,6 @@ export function Contact() {
       console.log("not okay");
     }
   };
-
-  const name = watch("name");
-  const email = watch("email");
-  const message = watch("message");
 
   const isValidName = name.length > 0;
   const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(

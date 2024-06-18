@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start:dev": "vite",
+    "start:test": "node server",
     "start:server": "NODE_ENV=production node server",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
