@@ -206,7 +206,7 @@ export function Contact() {
   });
 
   return (
-    <ContentContainer>
+    <ContentContainer data-aos="fade-up" data-aos-duration="1000">
       {/* LOADING */}
       <CSSTransition
         in={step === "sending"}

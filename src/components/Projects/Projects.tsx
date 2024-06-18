@@ -59,7 +59,7 @@ export function Projects() {
   ];
 
   return (
-    <ContentContainer>
+    <ContentContainer data-aos="fade-up" data-aos-duration="1000">
       <TextContent>
         <HeaderText>Projects</HeaderText>
         <ExplanationText>Check them out</ExplanationText>

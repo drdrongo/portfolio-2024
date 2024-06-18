@@ -18,100 +18,21 @@ import { scrollTo } from "./utils/tools";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const CONTENT_WIDTH = 840;
+import {
+  AppContainer,
+  SectionContainer,
+  TopSectionContainer,
+  ContentContainer,
+  BlobContainer,
+  Image,
+  RotatedImage,
+  TextContent,
+  HeaderText,
+  AbsoluteContainer,
+  ColorFade,
+} from "./styles";
 
 const theme = { colors: COLORS };
-
-const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100vw;
-  position: relative;
-  background-color: ${(props) => props.theme.colors.navy};
-`;
-
-const SectionContainer = styled.section<{
-  $background?: string;
-}>`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  /* min-height: 100vh; */
-  background-color: ${(props) => props.$background ?? props.theme.colors.navy};
-  position: relative;
-  padding-top: 90px;
-  padding-bottom: 40px;
-`;
-
-const TopSectionContainer = styled(SectionContainer)`
-  min-height: 100vh;
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 30px;
-  width: ${CONTENT_WIDTH}px;
-  flex-grow: 1;
-`;
-
-const BlobContainer = styled.div`
-  position: relative;
-  height: 320px;
-  width: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Image = styled.img`
-  position: absolute;
-  inset: 0;
-`;
-
-const RotatedImage = styled(Image)`
-  transform: rotate(-98deg) translateY(6px) translateX(-11px);
-  position: absolute;
-  inset: 0;
-`;
-
-const TextContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-`;
-
-const HeaderText = styled.h1`
-  font-family: "poppins";
-`;
-
-const AbsoluteContainer = styled.div`
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
-`;
-
-const ColorFade = styled.div<{ direction: "up" | "down" }>`
-  top: 0;
-  height: 200px;
-  width: 100%;
-  background: linear-gradient(
-    ${(props) =>
-      props.direction === "up"
-        ? `${props.theme.colors.navy}, #000`
-        : `#000, ${props.theme.colors.navy}`}
-  );
-`;
 
 const INITIAL_HOUR = 18;
 
@@ -247,22 +168,13 @@ function App() {
 
         {/* My Skills */}
         <ColorFade direction="down" />
-        <SectionContainer
-          id="skills"
-          data-aos="fade-up"
-          data-aos-duration="1000"
-        >
+        <SectionContainer id="skills">
           <MySkills />
         </SectionContainer>
 
         {/* My Projects */}
         <ColorFade direction="up" />
-        <SectionContainer
-          $background="black"
-          id="projects"
-          data-aos="fade-up"
-          data-aos-duration="1000"
-        >
+        <SectionContainer $background="black" id="projects">
           <Projects />
         </SectionContainer>
 
@@ -270,8 +182,8 @@ function App() {
         <ColorFade direction="down" />
         <SectionContainer
           id="contact"
-          data-aos="fade-up"
-          data-aos-duration="1000"
+          // data-aos="fade-up"
+          // data-aos-duration="1000"
         >
           <Contact />
         </SectionContainer>

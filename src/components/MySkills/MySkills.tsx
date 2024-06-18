@@ -103,7 +103,7 @@ const TechBox = ({ src, name }: { src: string; name: string }) => {
 
 export function MySkills() {
   return (
-    <ContentContainer>
+    <ContentContainer data-aos="fade-up" data-aos-duration="1000">
       <TextContent>
         <HeaderText>My Skills</HeaderText>
         <ExplanationText>Languages, Frameworks & Libraries</ExplanationText>
